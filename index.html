@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -722,13 +721,15 @@
 
 <script>
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  EMAILJS CONFIGURATION — fill these in once your account   ║
-// ║  is set up at emailjs.com                                   ║
+// ║  FORMSPREE CONFIGURATION                                    ║
+// ║  1. Go to formspree.io and create a free account            ║
+// ║  2. Create a new form — set the destination to              ║
+// ║     emily@dentalnurse.training                              ║
+// ║  3. Copy the form endpoint URL and paste it below           ║
+// ║  4. Optional: enable Autoresponse in the form dashboard     ║
+// ║     to also send a copy to the learner automatically        ║
 // ╚══════════════════════════════════════════════════════════════╝
-const EMAILJS_PUBLIC_KEY  = 'saPEjicUFr73FNtI2';
-const EMAILJS_SERVICE_ID  = 'service_0v4fpqj';
-const EMAILJS_TEMPLATE_ID = 'template_o63hswi';
-const DNT_COPY_EMAIL      = 'emily@dentalnurse.training'; // Receives a copy of every result
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID'; // Replace with your Formspree endpoint
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║  VARK QUESTIONS                                             ║
@@ -1602,7 +1603,7 @@ function buildResultsSummaryText() {
     return lines.join('\n');
 }
 
-function sendEmail() {
+async function sendEmail() {
     const emailInput = document.getElementById('inp-email');
     const statusEl   = document.getElementById('email-status');
     const sendBtn    = event.target;
@@ -1615,8 +1616,7 @@ function sendEmail() {
         return;
     }
 
-    // Check that EmailJS has been configured
-    if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+    if (FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')) {
         statusEl.className = 'send-status err';
         statusEl.textContent = 'Email sending is not yet configured. Please download your results using the PDF button above.';
         statusEl.classList.remove('hidden');
@@ -1631,34 +1631,40 @@ function sendEmail() {
     const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
     const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
 
-    const params = {
-        to_email:        email,
-        cc_email:        DNT_COPY_EMAIL,
-        learner_name:    state.name,
-        learner_course:  state.course,
+    const payload = {
+        name:            state.name,
+        email:           email,          // Formspree uses this as reply-to
+        _replyto:        email,
+        course:          state.course,
         date_completed:  today,
         vark_style:      state.varkResult.map(k => varkLabels[k]||k).join(' & '),
         hm_style:        state.hmResult.map(k => hmLabels[k]||k).join(' & '),
-        results_summary: buildResultsSummaryText()
+        message:         buildResultsSummaryText()
     };
 
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
-        .then(() => {
-            statusEl.className = 'send-status ok';
-            statusEl.textContent = `Your results have been sent to ${email}. Please check your inbox (and spam folder if needed).`;
-            statusEl.classList.remove('hidden');
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Send my results';
-        })
-        .catch(err => {
-            console.error('EmailJS error:', err);
-            statusEl.className = 'send-status err';
-            statusEl.textContent = 'There was a problem sending the email. Please download your results as a PDF instead.';
-            statusEl.classList.remove('hidden');
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Send my results';
+    try {
+        const res = await fetch(FORMSPREE_ENDPOINT, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body:    JSON.stringify(payload)
         });
+
+        if (res.ok) {
+            statusEl.className = 'send-status ok';
+            statusEl.textContent = `Your results have been sent to emily@dentalnurse.training with your email (${email}) as the reply-to. Check with your trainer if you need a personal copy.`;
+        } else {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.error || `Status ${res.status}`);
+        }
+    } catch (err) {
+        console.error('Formspree error:', err);
+        statusEl.className = 'send-status err';
+        statusEl.textContent = 'There was a problem sending the email. Please download your results as a PDF instead.';
+    } finally {
+        statusEl.classList.remove('hidden');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send my results';
+    }
 }
 </script>
 
