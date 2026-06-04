@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNT Learning Style Quiz | Dental Nurse Training</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary:        #006B7D;
+            --primary-dark:   #004F5E;
+            --primary-light:  #E6F3F5;
+            --primary-mid:    #008FA6;
+            --accent:         #00B5CC;
+            --white:          #FFFFFF;
+            --text:           #2C3E50;
+            --text-light:     #5A7280;
+            --border:         #CCDDE2;
+            --bg:             #F4F7F8;
+            --shadow:         0 2px 14px rgba(0,107,125,0.10);
+            --radius:         8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header ─────────────────────────────── */
+        header {
+            background: var(--primary-dark);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+        }
+        .header-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        header img.logo {
+            height: 54px;
+            width: auto;
+            flex-shrink: 0;
+        }
+        .header-text h1 {
+            color: #ffffff;
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: 0.01em;
+            line-height: 1.2;
+        }
+        .header-text p {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        /* ── Footer ─────────────────────────────── */
+        footer {
+            background: var(--primary-dark);
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            padding: 22px 24px;
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+        footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+        footer a:hover { color: #ffffff; }
+
+        /* ── Layout ──────────────────────────────── */
+        main {
+            max-width: 800px;
+            margin: 36px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 36px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Progress bar ────────────────────────── */
+        #progress-container {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 28px;
+            margin-bottom: 20px;
+        }
+        .progress-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .progress-track {
+            background: var(--border);
+            border-radius: 20px;
+            height: 7px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-dark), var(--accent));
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.35s ease;
+        }
+
+        /* ── Buttons ─────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Lato', sans-serif;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            line-height: 1;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0,107,125,0.28);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+        .btn-ghost {
+            background: #ECF1F3;
+            color: var(--text-light);
+            border-color: #ECF1F3;
+        }
+        .btn-ghost:hover { background: #DDE6E9; border-color: #DDE6E9; }
+        .btn-lg { padding: 15px 34px; font-size: 1.02rem; }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        /* ── Forms ───────────────────────────────── */
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.93rem;
+            margin-bottom: 7px;
+            color: var(--text);
+        }
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+        input::placeholder { color: #AABCC2; }
+
+        /* ── Start screen ────────────────────────── */
+        .start-heading {
+            font-size: 1.65rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            line-height: 1.25;
+        }
+        .start-intro p {
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+        .start-intro p:last-child { margin-bottom: 0; }
+        .divider {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 28px 0;
+        }
+
+        /* ── Section badge ───────────────────────── */
+        .section-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            margin-bottom: 18px;
+        }
+
+        /* ── Question text ───────────────────────── */
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.65;
+        }
+        .multi-note {
+            font-size: 0.83rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* ── VARK option grid ────────────────────── */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .option-card {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 40px 16px 16px;
+            text-align: left;
+            cursor: pointer;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.92rem;
+            color: var(--text);
+            transition: all 0.18s ease;
+            line-height: 1.55;
+            position: relative;
+            width: 100%;
+        }
+        .option-card:hover {
+            border-color: var(--primary-mid);
+            background: var(--primary-light);
+        }
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .option-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            color: var(--primary);
+            font-weight: 900;
+            font-size: 1.05rem;
+        }
+
+        /* ── Likert scale ────────────────────────── */
+        .likert-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .likert-card {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            transition: all 0.18s ease;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+        .likert-card:hover {
+            border-color: var(--primary-mid);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        .likert-card.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+        .likert-num {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        /* ── Nav row ─────────────────────────────── */
+        .q-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ── Transition screen ───────────────────── */
+        .transition-inner {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+        .big-icon { font-size: 3.2rem; margin-bottom: 18px; display: block; }
+        .transition-inner h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+        .transition-inner p {
+            color: var(--text-light);
+            max-width: 520px;
+            margin: 0 auto 10px;
+        }
+        .transition-inner p:last-of-type { margin-bottom: 28px; }
+
+        /* ── Results ─────────────────────────────── */
+        .results-hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: #ffffff;
+            border-radius: var(--radius);
+            padding: 38px 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .results-hero h2 {
+            font-size: 1.65rem;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+        .results-hero p {
+            opacity: 0.92;
+            margin-bottom: 12px;
+            font-size: 0.97rem;
+        }
+        .results-hero p:last-child { margin-bottom: 0; }
+
+        .section-label {
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+            margin-bottom: 24px;
+        }
+
+        .profile-title {
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 14px;
+        }
+        .profile-intro {
+            color: var(--text);
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 0.97rem;
+        }
+        .tips-heading {
+            font-weight: 900;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+            margin: 22px 0 10px;
+        }
+        .tip-list {
+            list-style: none;
+            margin-bottom: 4px;
+        }
+        .tip-list li {
+            padding: 8px 0 8px 26px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.93rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+        .tip-list li:last-child { border-bottom: none; }
+        .tip-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 900;
+        }
+        .sub-tips-label {
+            font-style: italic;
+            font-size: 0.88rem;
+            color: var(--text-light);
+            margin: 18px 0 8px;
+        }
+
+        /* Strengths / Watch out boxes */
+        .sw-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .sw-box {
+            background: var(--primary-light);
+            border-radius: 6px;
+            padding: 16px 18px;
+        }
+        .sw-box.caution { background: #FFF6E6; }
+        .sw-box h4 {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+        .sw-box.caution h4 { color: #8B5E00; }
+        .sw-box ul { list-style: none; }
+        .sw-box ul li {
+            font-size: 0.88rem;
+            padding: 4px 0 4px 16px;
+            position: relative;
+            line-height: 1.45;
+            color: var(--text);
+        }
+        .sw-box ul li::before { content: '•'; position: absolute; left: 0; color: var(--primary); }
+        .sw-box.caution ul li::before { color: #C47800; }
+
+        /* Divider between multiple profiles */
+        .profile-divider {
+            border: none;
+            border-top: 2px dashed var(--border);
+            margin: 28px 0;
+        }
+
+        /* ── Save / Email section ────────────────── */
+        .save-section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .save-section p {
+            color: var(--text-light);
+            font-size: 0.92rem;
+            margin-bottom: 20px;
+        }
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+
+        .email-banner {
+            background: #FFFBEE;
+            border: 2px solid #F5D87A;
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            margin-top: 24px;
+        }
+        .email-banner h3 {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #7A5500;
+            margin-bottom: 8px;
+        }
+        .email-banner .warn-text {
+            color: #5C4000;
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+            line-height: 1.65;
+        }
+        .email-banner strong { color: #7A5500; }
+        .email-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .email-row .form-group { flex: 1; margin-bottom: 0; }
+        .send-status {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .send-status.ok  { background: #D4EDDA; color: #155724; }
+        .send-status.err { background: #F8D7DA; color: #721C24; }
+
+        /* ── Error message ───────────────────────── */
+        .field-error {
+            color: #C0392B;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* ── Utility ─────────────────────────────── */
+        .hidden { display: none !important; }
+        @media (max-width: 600px) {
+            .card { padding: 24px 20px; }
+            .header-inner { gap: 12px; padding: 16px 18px; }
+            header img.logo { height: 44px; }
+            .header-text h1 { font-size: 1.1rem; }
+            .options-grid { grid-template-columns: 1fr; }
+            .likert-grid { grid-template-columns: repeat(2, 1fr); }
+            .sw-grid { grid-template-columns: 1fr; }
+            .action-row { flex-direction: column; }
+            .action-row .btn { width: 100%; }
+            .email-row { flex-direction: column; align-items: stretch; }
+            .results-hero { padding: 28px 24px; }
+            main { margin: 20px auto; }
+        }
+
+        /* ── Hidden PDF template ─────────────────── */
+        #pdf-template {
+            display: none;
+            font-family: 'Lato', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <img class="logo"
+             src="https://dentalnurse.training/wp-content/uploads/2023/05/WEBLOGO.png"
+             alt="Dental Nurse Training"
+             onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>Learning Style Quiz</h1>
+            <p>Dental Nurse Training</p>
+        </div>
+    </div>
+</header>
+
+<main>
+
+    <!-- ══════════════════════════════════════════
+         START SCREEN
+    ═══════════════════════════════════════════ -->
+    <div id="screen-start">
+        <div class="card">
+            <h2 class="start-heading">Welcome to Your Learning Style Quiz</h2>
+            <div class="start-intro">
+                <p>This quiz will help you understand how you learn best. It takes around 10 to 15 minutes to complete and is split into two short sections.</p>
+                <p>Your results will give you two learning profiles: one based on how you prefer to take in information, and one based on how you approach learning as a whole. Together, they will help you study smarter throughout your course.</p>
+                <p>There are no right or wrong answers. Just go with your first instinct and choose whatever feels most like you.</p>
+                <p>Before you begin, please enter your details below.</p>
+            </div>
+            <hr class="divider">
+            <div class="form-group">
+                <label for="inp-name">Your full name</label>
+                <input type="text" id="inp-name" placeholder="Enter your full name" autocomplete="name">
+                <div id="err-name" class="field-error hidden">Please enter your full name to continue.</div>
+            </div>
+            <div class="form-group">
+                <label for="inp-course">Course you are enrolled on</label>
+                <input type="text" id="inp-course" placeholder="e.g. Certificate in Dental Nursing">
+                <div id="err-course" class="field-error hidden">Please enter your course to continue.</div>
+            </div>
+            <button class="btn btn-primary btn-lg" onclick="startQuiz()">Begin the Quiz</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PROGRESS BAR (shared)
+    ═══════════════════════════════════════════ -->
+    <div id="progress-container" class="hidden">
+        <div class="progress-meta">
+            <span id="prog-section">Section 1 of 2: Your Learning Style</span>
+            <span id="prog-count">Question 1 of 16</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VARK QUIZ
+    ═══════════════════════════════════════════ -->
+    <div id="screen-vark" class="hidden">
+        <div class="card">
+            <div class="section-badge">Section 1 of 2 — Your Learning Style (VARK)</div>
+            <p class="question-text" id="vark-q-text"></p>
+            <p class="multi-note">You can select more than one answer if more than one applies to you.</p>
+            <div class="options-grid" id="vark-options"></div>
+            <div class="q-nav">
+                <button class="btn btn-ghost" id="vark-back" onclick="varkBack()">← Back</button>
+                <button class="btn btn-primary" id="vark-next" onclick="varkNext()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         TRANSITION SCREEN
+    ═══════════════════════════════════════════ -->
+    <div id="screen-transition" class="hidden">
+        <div class="card">
+            <div class="transition-inner">
+                <span class="big-icon">🎯</span>
+                <h2>Section 1 complete — great work!</h2>
+                <p>You have finished the learning style section. Now you will move on to 20 short statements about how you approach learning in general.</p>
+                <p>For each statement, choose the response that best describes you. There are no right or wrong answers — just go with your honest first thought.</p>
+                <button class="btn btn-primary btn-lg" onclick="startHM()">Continue to Section 2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         H&M QUIZ
+    ═══════════════════════════════════════════ -->
+    <div id="screen-hm" class="hidden">
+        <div class="card">
+            <div class="section-badge">Section 2 of 2 — Your Learning Approach</div>
+            <p class="question-text" id="hm-q-text"></p>
+            <div class="likert-grid" id="hm-options"></div>
+            <div class="q-nav">
+                <button class="btn btn-ghost" id="hm-back" onclick="hmBack()">← Back</button>
+                <button class="btn btn-primary" id="hm-next" onclick="hmNext()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         RESULTS SCREEN
+    ═══════════════════════════════════════════ -->
+    <div id="screen-results" class="hidden">
+
+        <!-- Hero intro -->
+        <div class="results-hero">
+            <h2>Your results are in!</h2>
+            <p>You have two learning profiles. Your VARK result tells you how you prefer to take in and process information. Your learning approach result tells you how you prefer to engage with learning as a whole. Together, they give you a more complete picture of how you learn best.</p>
+            <p>Read both profiles below and look for the tips that appear in both. Where your two profiles overlap, those strategies are likely to be your most powerful revision tools.</p>
+            <p>There is no right or wrong result. Every style has real strengths. The goal is simply to understand yourself better so you can study smarter, not harder.</p>
+        </div>
+
+        <!-- VARK results -->
+        <div class="card">
+            <div class="section-label">Your VARK Learning Style</div>
+            <div id="vark-results"></div>
+        </div>
+
+        <!-- H&M results -->
+        <div class="card">
+            <div class="section-label">Your Learning Approach</div>
+            <div id="hm-results"></div>
+        </div>
+
+        <!-- Save / Download -->
+        <div class="card save-section">
+            <h3>Save your results</h3>
+            <p>Your results are not stored anywhere. Use the options below to keep a copy before you leave this page.</p>
+            <div class="action-row">
+                <button class="btn btn-primary btn-lg" onclick="downloadPDF()">📄 Download results as PDF</button>
+            </div>
+        </div>
+
+        <!-- Email section -->
+        <div class="email-banner">
+            <h3>Email your results to yourself</h3>
+            <p class="warn-text">Enter your email address below to receive a copy of your results. <strong>If you do not save or download these now, they will not be stored anywhere and you will not be able to retrieve them.</strong> This is your only opportunity to keep a copy.</p>
+            <div class="email-row">
+                <div class="form-group">
+                    <label for="inp-email" style="color:#7A5500;">Your email address</label>
+                    <input type="email" id="inp-email" placeholder="yourname@example.com">
+                </div>
+                <button class="btn btn-primary" onclick="sendEmail()" style="white-space:nowrap;align-self:flex-end;margin-bottom:0;">Send my results</button>
+            </div>
+            <div id="email-status" class="hidden send-status"></div>
+        </div>
+
+    </div><!-- /#screen-results -->
+
+</main>
+
+<!-- Hidden PDF template - populated before generating PDF -->
+<div id="pdf-template"></div>
+
+<footer>
+    <p>Dental Nurse Training Ltd &nbsp;|&nbsp; <a href="https://dentalnurse.training" target="_blank">dentalnurse.training</a></p>
+</footer>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  EMAILJS CONFIGURATION — fill these in once your account   ║
+// ║  is set up at emailjs.com                                   ║
+// ╚══════════════════════════════════════════════════════════════╝
+const EMAILJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';   // Replace with your EmailJS public key
+const EMAILJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';   // Replace with your EmailJS service ID
+const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';  // Replace with your EmailJS template ID
+const DNT_COPY_EMAIL      = 'emily@dentalnurse.training'; // Receives a copy of every result
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  VARK QUESTIONS                                             ║
+// ║  Each option has a hidden category: V A R K                ║
+// ║  Learners can select multiple options per question          ║
+// ╚══════════════════════════════════════════════════════════════╝
+const varkQuestions = [
+    {
+        q: "You are about to give directions to a person who is staying in a hotel and wants to visit you. She has a car. Would you:",
+        opts: [
+            { text: "Draw a map on paper", cat: "V" },
+            { text: "Tell her the directions verbally", cat: "A" },
+            { text: "Write down the directions without a map", cat: "R" },
+            { text: "Pick her up from the hotel instead", cat: "K" }
+        ]
+    },
+    {
+        q: "You are not sure how to spell a word. Do you:",
+        opts: [
+            { text: "Picture the word in your mind and see how it looks", cat: "V" },
+            { text: "Sound it out in your head", cat: "A" },
+            { text: "Look it up in a dictionary or online", cat: "R" },
+            { text: "Write it out to see whether it looks right", cat: "K" }
+        ]
+    },
+    {
+        q: "You have just received your itinerary for an upcoming work trip. A colleague wants to know about it. Would you:",
+        opts: [
+            { text: "Show them the route on a map", cat: "V" },
+            { text: "Phone or speak to them directly and describe it", cat: "A" },
+            { text: "Print it out or send them the written itinerary", cat: "R" },
+            { text: "Tell them about what you will be doing at each stop", cat: "K" }
+        ]
+    },
+    {
+        q: "You are learning a new procedure or skill at work. You find it easiest to understand when:",
+        opts: [
+            { text: "Someone shows you a diagram or visual step-by-step guide", cat: "V" },
+            { text: "Someone talks you through it", cat: "A" },
+            { text: "You have written instructions to follow", cat: "R" },
+            { text: "You can have a go at doing it yourself", cat: "K" }
+        ]
+    },
+    {
+        q: "You are buying a piece of equipment for the first time. Other than price, what would most influence your decision?",
+        opts: [
+            { text: "How it looks and the clarity of the display", cat: "V" },
+            { text: "A recommendation from a colleague or salesperson", cat: "A" },
+            { text: "Reading the specification and reviews", cat: "R" },
+            { text: "Testing it yourself to see how it works in practice", cat: "K" }
+        ]
+    },
+    {
+        q: "A friend tells you about a new restaurant. You want to know more. Do you:",
+        opts: [
+            { text: "Ask them to show you photos or the menu online", cat: "V" },
+            { text: "Ask them to tell you more about the food and atmosphere", cat: "A" },
+            { text: "Look it up yourself and read the reviews", cat: "R" },
+            { text: "Suggest going there so you can experience it yourself", cat: "K" }
+        ]
+    },
+    {
+        q: "You prefer a trainer or presenter who uses:",
+        opts: [
+            { text: "Diagrams, charts, and clear slides", cat: "V" },
+            { text: "Discussion, questions, and verbal explanation", cat: "A" },
+            { text: "Handouts, notes, and written resources", cat: "R" },
+            { text: "Demonstrations and practical activities", cat: "K" }
+        ]
+    },
+    {
+        q: "You have a new clinical procedure to learn. You would:",
+        opts: [
+            { text: "Watch someone carry it out step by step first", cat: "V" },
+            { text: "Ask someone to explain what to do as you go", cat: "A" },
+            { text: "Read through the written protocol or guidelines beforehand", cat: "R" },
+            { text: "Try it yourself under supervision as soon as possible", cat: "K" }
+        ]
+    },
+    {
+        q: "You are revising for an assessment. You tend to:",
+        opts: [
+            { text: "Use mind maps, colour coding, or visual summaries", cat: "V" },
+            { text: "Read your notes aloud or discuss topics with someone", cat: "A" },
+            { text: "Rewrite your notes or create written summaries", cat: "R" },
+            { text: "Use practice questions and mock assessments", cat: "K" }
+        ]
+    },
+    {
+        q: "You need to remember the steps of a clinical procedure. You are most likely to:",
+        opts: [
+            { text: "Visualise each step in your head in order", cat: "V" },
+            { text: "Recite the steps out loud to yourself", cat: "A" },
+            { text: "Write the steps out in the correct sequence", cat: "R" },
+            { text: "Practise the procedure until it feels automatic", cat: "K" }
+        ]
+    },
+    {
+        q: "When you receive feedback on your work, you find it most useful when it is:",
+        opts: [
+            { text: "Shown to you with visual examples or comparisons", cat: "V" },
+            { text: "Discussed with you verbally in person", cat: "A" },
+            { text: "Written down with clear explanations", cat: "R" },
+            { text: "Demonstrated to you — showing you what to do differently", cat: "K" }
+        ]
+    },
+    {
+        q: "You are trying to understand a complex regulation or policy. You would:",
+        opts: [
+            { text: "Draw a diagram or flowchart to map it out", cat: "V" },
+            { text: "Talk it through with a colleague or tutor", cat: "A" },
+            { text: "Read it carefully and make notes", cat: "R" },
+            { text: "Think of real situations you have experienced where it applies", cat: "K" }
+        ]
+    },
+    {
+        q: "You find a topic hard to understand. You tend to:",
+        opts: [
+            { text: "Look for a video or visual explanation online", cat: "V" },
+            { text: "Ask someone to explain it to you", cat: "A" },
+            { text: "Find a detailed written explanation or textbook", cat: "R" },
+            { text: "Connect it to something you have experienced in practice", cat: "K" }
+        ]
+    },
+    {
+        q: "You are preparing to share information with a group. You would:",
+        opts: [
+            { text: "Use slides with clear visuals and minimal text", cat: "V" },
+            { text: "Plan to talk through your points conversationally", cat: "A" },
+            { text: "Prepare detailed notes or a written handout", cat: "R" },
+            { text: "Include real case studies and practical examples", cat: "K" }
+        ]
+    },
+    {
+        q: "You have just completed a learning session or training day. To make it stick, you would:",
+        opts: [
+            { text: "Review any diagrams, charts, or slides from the session", cat: "V" },
+            { text: "Talk through what you learned with a colleague", cat: "A" },
+            { text: "Write up a summary of the key points", cat: "R" },
+            { text: "Think about how to apply what you learned at work", cat: "K" }
+        ]
+    },
+    {
+        q: "When you remember a learning experience particularly well, it is usually because:",
+        opts: [
+            { text: "There were strong visuals, images, or clear demonstrations", cat: "V" },
+            { text: "Someone explained it really clearly or you talked about it", cat: "A" },
+            { text: "You made good notes or read something that really clicked", cat: "R" },
+            { text: "You got to do it, practise it, or see it used in real life", cat: "K" }
+        ]
+    }
+];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  H&M LEARNING APPROACH QUESTIONS (20 statements)           ║
+// ║  Scored: Rarely=1  Sometimes=2  Often=3  Almost Always=4   ║
+// ║  Mapping by position:                                       ║
+// ║    1,5,9,13,17  = Activist                                 ║
+// ║    2,6,10,14,18 = Reflector                                ║
+// ║    3,7,11,15,19 = Theorist                                 ║
+// ║    4,8,12,16,20 = Pragmatist                               ║
+// ╚══════════════════════════════════════════════════════════════╝
+const hmQuestions = [
+    /* 1  — Activist   */ "I enjoy trying new activities and experiences without overthinking them first.",
+    /* 2  — Reflector  */ "I prefer to take time to think things through carefully before drawing conclusions.",
+    /* 3  — Theorist   */ "I like to understand the reasoning and principles behind what I am learning.",
+    /* 4  — Pragmatist */ "I am most motivated when I can see a clear, practical use for what I am learning.",
+    /* 5  — Activist   */ "I get bored when I am not actively involved and engaged in what I am doing.",
+    /* 6  — Reflector  */ "I tend to consider all the angles of a situation before making a decision.",
+    /* 7  — Theorist   */ "It is important to me that information is well-structured and backed by evidence.",
+    /* 8  — Pragmatist */ "I prefer tasks where I can see a clear, real-world outcome.",
+    /* 9  — Activist   */ "I am happy to jump in and try something new even when I do not have all the details yet.",
+    /* 10 — Reflector  */ "I take time to review and reflect after completing a learning session.",
+    /* 11 — Theorist   */ "I enjoy finding connections between different ideas, theories, or topics.",
+    /* 12 — Pragmatist */ "I am good at finding practical solutions to problems.",
+    /* 13 — Activist   */ "I learn well in group settings where I can discuss ideas with others.",
+    /* 14 — Reflector  */ "I prefer not to be rushed when I am taking in new information.",
+    /* 15 — Theorist   */ "I feel uncomfortable moving on if I do not fully understand something first.",
+    /* 16 — Pragmatist */ "I can usually put what I have learned straight into practice without much difficulty.",
+    /* 17 — Activist   */ "I enjoy variety and find it difficult to stay engaged with repetitive tasks.",
+    /* 18 — Reflector  */ "I keep notes and review them to help information settle in my mind.",
+    /* 19 — Theorist   */ "I like to explore ideas from different perspectives and question assumptions.",
+    /* 20 — Pragmatist */ "I focus on achieving clear goals and measurable outcomes in my work or study."
+];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  VARK PROFILE CONTENT — use exactly as provided            ║
+// ╚══════════════════════════════════════════════════════════════╝
+const varkProfiles = {
+    V: {
+        title: "You are a Visual Learner",
+        intro: "You understand and remember information best when it is presented visually. Diagrams, charts, colour coding, and mind maps help you make sense of complex ideas. You tend to think in pictures and may find large blocks of text harder to process on their own.",
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Create mind maps to connect topics and ideas",
+            "Colour-code your notes by theme or subject area",
+            "Convert written information into diagrams, flowcharts, or tables",
+            "Use highlighters to pick out key points when reading",
+            "Watch video content alongside written materials",
+            "Sketch out processes or procedures as diagrams rather than writing them word for word"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Drawing out and labelling equipment or anatomy diagrams",
+            "Creating a flowchart for step-by-step procedures",
+            "Making a visual timeline for key legislation or guidelines",
+            "Using a colour-coded revision map for different topic areas"
+        ]
+    },
+    A: {
+        title: "You are an Auditory Learner",
+        intro: "You learn best by listening and talking. Hearing information explained out loud helps it stick, and you often find that discussing something with others helps you understand it more deeply. Silence and reading alone can feel less engaging for you.",
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Talk through topics out loud, even if just to yourself",
+            "Record yourself summarising key points and play it back",
+            "Listen to podcasts or audio content related to your subject",
+            "Study with a friend or colleague and explain things to each other",
+            "Use the read-aloud function on your device when reviewing written materials",
+            "After a learning session, verbalise what you have just covered before moving on"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Recording a summary of a topic after reading about it and listening back while commuting",
+            "Talking through a procedure step by step out loud as you revise it",
+            "Discussing legislation or guidelines with a colleague to check your understanding",
+            "Asking your tutor to explain something verbally if written materials are not clicking"
+        ]
+    },
+    R: {
+        title: "You are a Read/Write Learner",
+        intro: "You learn best through words. Reading detailed explanations and writing things down in your own words helps you process and retain information. You are likely comfortable with written instructions and tend to produce thorough, well-organised notes.",
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Rewrite your notes in your own words after each study session",
+            "Make written summaries of key topics",
+            "Create lists, glossaries, and written definitions",
+            "Read widely around a topic, not just your course materials",
+            "Write out answers to practice questions in full",
+            "Keep a written revision log of what you have covered and what still needs work"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Writing out the key points of legislation in your own words rather than copying text directly",
+            "Creating a written glossary of dental terms and their definitions",
+            "Summarising each unit or topic in a short written paragraph from memory",
+            "Writing out answers to potential exam or assessment questions"
+        ]
+    },
+    K: {
+        title: "You are a Kinaesthetic Learner",
+        intro: "You learn best by doing. Real-life experience, practical application, and working through case studies help information make sense to you. Sitting and reading for long periods can feel difficult, and you often understand things better once you have tried them in practice.",
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Use practice questions and mock assessments as a core part of your revision",
+            "Connect theory to real experiences from your clinical or work setting",
+            "Take regular breaks during study sessions to stay focused",
+            "Use role play or worked examples to bring scenarios to life",
+            "Build in active revision techniques such as self-testing rather than passive re-reading",
+            "Apply what you are learning to real situations as quickly as possible"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Linking legislation or guidelines to situations you have actually encountered at work",
+            "Using case studies and clinical scenarios to test your knowledge",
+            "Practising verbal or written answers out loud as if in an assessment",
+            "Reflecting on real experiences from your workplace and connecting them to your course content"
+        ]
+    },
+    M: {
+        title: "You are a Multimodal Learner",
+        intro: "You do not rely on one single learning style. You are flexible and can adapt to different formats depending on the topic or situation. This is a real strength, as it means you can get something useful from a wider range of learning resources.",
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Mix your methods rather than sticking to one approach",
+            "Use different formats for different topics — for example, a diagram for a complex procedure but written notes for legislation",
+            "You may need more time to feel fully confident with a topic because you process it from multiple angles, and that is completely normal",
+            "Pay attention to which methods feel most effective for particular types of content and build on that"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Watching a video on a topic, then writing a summary, then testing yourself with practice questions",
+            "Using different revision techniques for different units depending on the content type",
+            "Mixing reading, visual summaries, and discussion with colleagues across your revision"
+        ]
+    }
+};
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  H&M PROFILE CONTENT — use exactly as provided            ║
+// ╚══════════════════════════════════════════════════════════════╝
+const hmProfiles = {
+    activist: {
+        title: "You are an Activist Learner",
+        intro: "You thrive on new experiences and learn best by getting stuck in. You are enthusiastic, open-minded, and energised by challenge. You can find repetitive tasks or passive learning frustrating, and you tend to learn most when you are fully involved and engaged.",
+        strengths: [
+            "Enthusiastic and willing to try new things",
+            "Energised by challenge and variety",
+            "Learns well from group activities and discussion",
+            "Comfortable taking risks and learning from mistakes"
+        ],
+        watchouts: [
+            "Rushing into things without fully consolidating your understanding first",
+            "Moving on too quickly before the learning has fully sunk in",
+            "Finding theory-heavy or reading-heavy tasks harder to engage with"
+        ],
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Break revision into short, varied sessions rather than long blocks",
+            "Use self-testing, quizzes, and practice assessments to keep things active",
+            "Study with others where possible and talk through topics",
+            "Set yourself mini challenges or targets to keep motivation up",
+            "After a practical or active task, take a moment to reflect and consolidate what you learned before moving on"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Using practice questions and mock scenarios as your main revision tool",
+            "Role-playing clinical or assessment scenarios with a colleague",
+            "Setting yourself topic challenges — for example covering one unit topic per day",
+            "Joining or forming a study group with fellow learners"
+        ]
+    },
+    reflector: {
+        title: "You are a Reflector Learner",
+        intro: "You learn best when you have time to think things through. You prefer to observe, gather information, and consider all angles before drawing conclusions. You tend to be thorough and thoughtful, and you produce your best work when you are not rushed.",
+        strengths: [
+            "Thoughtful and considered in your approach",
+            "Good at gathering and processing information before acting",
+            "Produces well-considered, thorough work",
+            "Strong at reflective tasks and written assignments"
+        ],
+        watchouts: [
+            "Taking too long to get started because you want to feel fully ready",
+            "Overthinking or second-guessing your answers",
+            "Finding time pressure or fast-paced learning environments stressful"
+        ],
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Build in plenty of review time after learning sessions — do not try to cram",
+            "Keep a learning journal or reflection log as you work through your course",
+            "Give yourself permission to start before you feel completely ready",
+            "Plan your study schedule early so you never feel rushed",
+            "Use written summaries and notes as a way of processing what you have learned"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Using reflective accounts and portfolio evidence as a real learning tool, not just a tick-box exercise",
+            "Reviewing your notes a day or two after a session to let the information settle",
+            "Keeping a reflective diary of your clinical experiences and what you took from them",
+            "Planning your assessment submissions well in advance to avoid last-minute pressure"
+        ]
+    },
+    theorist: {
+        title: "You are a Theorist Learner",
+        intro: "You like to understand the why behind everything. You learn best when information is presented logically, with clear structure and a solid evidence base. You are comfortable with complex ideas and enjoy analysis, but you can find tasks that feel vague or unclear more challenging.",
+        strengths: [
+            "Strong analytical thinker",
+            "Comfortable with complex or detailed information",
+            "Learns well from well-structured, evidence-based content",
+            "Good at spotting connections between ideas and concepts"
+        ],
+        watchouts: [
+            "Getting stuck trying to fully understand something before moving forward",
+            "Feeling uncomfortable with ambiguity or tasks that lack clear structure",
+            "Finding open-ended or creative tasks less satisfying"
+        ],
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Read widely around topics to build a thorough understanding",
+            "Look for the evidence and reasoning behind guidelines and procedures, not just what they say",
+            "Use structured revision plans with clear goals for each session",
+            "Make connections between topics and build a bigger picture of how things link together",
+            "If something feels unclear, research it further before moving on"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Reading the reasoning behind legislation and guidelines, not just memorising the content",
+            "Researching the evidence base for clinical procedures and best practice",
+            "Building structured revision plans broken down by unit or topic",
+            "Using the GDC Standards as a framework to connect different areas of your learning"
+        ]
+    },
+    pragmatist: {
+        title: "You are a Pragmatist Learner",
+        intro: "You are motivated by practical outcomes. You learn best when you can clearly see how something applies to real life. You are efficient, focused, and results-driven, and you tend to engage most with learning that has an obvious purpose or application.",
+        strengths: [
+            "Focused and goal-oriented",
+            "Learns well from practical tasks, real examples, and case studies",
+            "Efficient and good at prioritising",
+            "Motivated by clear outcomes and visible progress"
+        ],
+        watchouts: [
+            "Disengaging from topics that feel too theoretical or abstract",
+            "Rushing through content to get to the practical application without fully consolidating the theory",
+            "Finding open-ended or exploratory tasks less motivating"
+        ],
+        studyHeading: "How to study effectively:",
+        studyTips: [
+            "Always connect what you are learning to real practice — ask yourself how does this apply to my role?",
+            "Use case studies, worked examples, and clinical scenarios as revision tools",
+            "Set clear, practical goals for each study session",
+            "Focus on understanding how theory translates into action rather than learning facts in isolation",
+            "Use practice assessments and mock questions to give your revision a clear purpose"
+        ],
+        contextHeading: "In your dental course, this might look like:",
+        contextTips: [
+            "Linking everything you study back to real situations from your workplace",
+            "Using clinical case studies to test your understanding of theory",
+            "Setting yourself clear targets for each study session — for example completing one topic and testing yourself on it before moving on",
+            "Focusing on how guidelines and legislation apply in day-to-day dental practice rather than just what they say"
+        ]
+    }
+};
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  QUIZ STATE                                                 ║
+// ╚══════════════════════════════════════════════════════════════╝
+const state = {
+    name:       '',
+    course:     '',
+    screen:     'start',       // start | vark | transition | hm | results
+    varkIdx:    0,
+    hmIdx:      0,
+    varkSel:    {},            // { questionIndex: ['V','R', ...] }
+    hmSel:      {},            // { questionIndex: 1|2|3|4 }
+    varkScores: { V:0, A:0, R:0, K:0 },
+    hmScores:   { activist:0, reflector:0, theorist:0, pragmatist:0 },
+    varkResult: [],            // dominant style keys
+    hmResult:   []             // dominant style keys
+};
+
+// H&M category mapping by 0-based index
+const hmMap = ['activist','reflector','theorist','pragmatist',
+               'activist','reflector','theorist','pragmatist',
+               'activist','reflector','theorist','pragmatist',
+               'activist','reflector','theorist','pragmatist',
+               'activist','reflector','theorist','pragmatist'];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  SCREEN MANAGEMENT                                          ║
+// ╚══════════════════════════════════════════════════════════════╝
+function showScreen(id) {
+    ['screen-start','screen-vark','screen-transition','screen-hm','screen-results']
+        .forEach(s => document.getElementById(s).classList.add('hidden'));
+    document.getElementById('progress-container').classList.add('hidden');
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'screen-vark' || id === 'screen-hm') {
+        document.getElementById('progress-container').classList.remove('hidden');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  START                                                      ║
+// ╚══════════════════════════════════════════════════════════════╝
+function startQuiz() {
+    const name   = document.getElementById('inp-name').value.trim();
+    const course = document.getElementById('inp-course').value.trim();
+    let ok = true;
+
+    document.getElementById('err-name').classList.add('hidden');
+    document.getElementById('err-course').classList.add('hidden');
+
+    if (!name) {
+        document.getElementById('err-name').classList.remove('hidden');
+        ok = false;
+    }
+    if (!course) {
+        document.getElementById('err-course').classList.remove('hidden');
+        ok = false;
+    }
+    if (!ok) return;
+
+    state.name   = name;
+    state.course = course;
+    state.varkIdx = 0;
+    state.varkSel = {};
+
+    showVARKQuestion(0);
+    showScreen('screen-vark');
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  VARK QUIZ                                                  ║
+// ╚══════════════════════════════════════════════════════════════╝
+function showVARKQuestion(idx) {
+    state.varkIdx = idx;
+    const q = varkQuestions[idx];
+
+    document.getElementById('vark-q-text').textContent = q.q;
+
+    const grid = document.getElementById('vark-options');
+    grid.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-card';
+        btn.textContent = opt.text;
+        const selected = (state.varkSel[idx] || []).includes(opt.cat);
+        if (selected) btn.classList.add('selected');
+        btn.onclick = () => toggleVARK(idx, opt.cat, btn);
+        grid.appendChild(btn);
+    });
+
+    document.getElementById('vark-back').style.visibility = (idx === 0) ? 'hidden' : 'visible';
+    document.getElementById('vark-next').textContent = (idx === varkQuestions.length - 1) ? 'See results →' : 'Next →';
+
+    updateProgress('vark', idx);
+}
+
+function toggleVARK(qIdx, cat, btn) {
+    if (!state.varkSel[qIdx]) state.varkSel[qIdx] = [];
+    const arr = state.varkSel[qIdx];
+    const pos = arr.indexOf(cat);
+    if (pos === -1) {
+        arr.push(cat);
+        btn.classList.add('selected');
+    } else {
+        arr.splice(pos, 1);
+        btn.classList.remove('selected');
+    }
+}
+
+function varkNext() {
+    if (state.varkIdx < varkQuestions.length - 1) {
+        showVARKQuestion(state.varkIdx + 1);
+    } else {
+        finishVARK();
+    }
+}
+
+function varkBack() {
+    if (state.varkIdx > 0) showVARKQuestion(state.varkIdx - 1);
+}
+
+function finishVARK() {
+    // Calculate scores
+    const scores = { V:0, A:0, R:0, K:0 };
+    Object.values(state.varkSel).forEach(cats => {
+        cats.forEach(c => { if (scores[c] !== undefined) scores[c]++; });
+    });
+    state.varkScores = scores;
+
+    // Determine result
+    const max = Math.max(...Object.values(scores));
+    const near = Object.keys(scores).filter(k => scores[k] >= max - 2);
+
+    if (near.length >= 3) {
+        state.varkResult = ['M'];
+    } else {
+        state.varkResult = near.length > 0 ? near : [Object.keys(scores).reduce((a,b) => scores[a] >= scores[b] ? a : b)];
+    }
+
+    showScreen('screen-transition');
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  H&M QUIZ                                                   ║
+// ╚══════════════════════════════════════════════════════════════╝
+function startHM() {
+    state.hmIdx = 0;
+    state.hmSel = {};
+    showHMQuestion(0);
+    showScreen('screen-hm');
+}
+
+function showHMQuestion(idx) {
+    state.hmIdx = idx;
+    document.getElementById('hm-q-text').textContent = hmQuestions[idx];
+
+    const grid = document.getElementById('hm-options');
+    grid.innerHTML = '';
+    const labels = ['Rarely','Sometimes','Often','Almost Always'];
+    labels.forEach((lbl, score) => {
+        const val = score + 1;
+        const btn = document.createElement('button');
+        btn.className = 'likert-card';
+        if (state.hmSel[idx] === val) btn.classList.add('selected');
+        btn.innerHTML = `<span class="likert-num">${val}</span>${lbl}`;
+        btn.onclick = () => selectLikert(idx, val);
+        grid.appendChild(btn);
+    });
+
+    document.getElementById('hm-back').style.visibility = (idx === 0) ? 'hidden' : 'visible';
+    document.getElementById('hm-next').textContent = (idx === hmQuestions.length - 1) ? 'See my results →' : 'Next →';
+
+    updateProgress('hm', idx);
+}
+
+function selectLikert(qIdx, val) {
+    state.hmSel[qIdx] = val;
+    // re-render to show selected state
+    const btns = document.querySelectorAll('#hm-options .likert-card');
+    btns.forEach((b, i) => {
+        b.classList.toggle('selected', i === val - 1);
+    });
+}
+
+function hmNext() {
+    if (state.hmIdx < hmQuestions.length - 1) {
+        showHMQuestion(state.hmIdx + 1);
+    } else {
+        finishHM();
+    }
+}
+
+function hmBack() {
+    if (state.hmIdx > 0) showHMQuestion(state.hmIdx - 1);
+}
+
+function finishHM() {
+    // Calculate scores
+    const scores = { activist:0, reflector:0, theorist:0, pragmatist:0 };
+    hmQuestions.forEach((_, i) => {
+        const val = state.hmSel[i] || 0;
+        scores[hmMap[i]] += val;
+    });
+    state.hmScores = scores;
+
+    // Determine result
+    const max = Math.max(...Object.values(scores));
+    const near = Object.keys(scores).filter(k => scores[k] >= max - 3);
+    state.hmResult = near.length > 0 ? near : [Object.keys(scores).reduce((a,b) => scores[a]>=scores[b]?a:b)];
+
+    buildResults();
+    showScreen('screen-results');
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  PROGRESS BAR                                               ║
+// ╚══════════════════════════════════════════════════════════════╝
+function updateProgress(section, idx) {
+    if (section === 'vark') {
+        document.getElementById('prog-section').textContent = 'Section 1 of 2: Your Learning Style';
+        document.getElementById('prog-count').textContent   = `Question ${idx + 1} of ${varkQuestions.length}`;
+        document.getElementById('prog-fill').style.width    = `${((idx) / varkQuestions.length) * 100}%`;
+    } else {
+        document.getElementById('prog-section').textContent = 'Section 2 of 2: Your Learning Approach';
+        document.getElementById('prog-count').textContent   = `Question ${idx + 1} of ${hmQuestions.length}`;
+        document.getElementById('prog-fill').style.width    = `${(50 + ((idx) / hmQuestions.length) * 50)}%`;
+    }
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  BUILD RESULTS HTML                                         ║
+// ╚══════════════════════════════════════════════════════════════╝
+function buildResults() {
+    document.getElementById('vark-results').innerHTML = buildVARKResultsHTML(state.varkResult);
+    document.getElementById('hm-results').innerHTML   = buildHMResultsHTML(state.hmResult);
+}
+
+function buildProfileHTML(profile, showStrengths) {
+    let html = `<h3 class="profile-title">${profile.title}</h3>`;
+    html += `<p class="profile-intro">${profile.intro}</p>`;
+
+    if (showStrengths && profile.strengths) {
+        html += `<div class="sw-grid">`;
+        html += `<div class="sw-box"><h4>Strengths</h4><ul>`;
+        profile.strengths.forEach(s => { html += `<li>${s}</li>`; });
+        html += `</ul></div>`;
+        html += `<div class="sw-box caution"><h4>Watch out for</h4><ul>`;
+        profile.watchouts.forEach(w => { html += `<li>${w}</li>`; });
+        html += `</ul></div>`;
+        html += `</div>`;
+    }
+
+    html += `<p class="tips-heading">${profile.studyHeading}</p>`;
+    html += `<ul class="tip-list">`;
+    profile.studyTips.forEach(t => { html += `<li>${t}</li>`; });
+    html += `</ul>`;
+
+    html += `<p class="sub-tips-label">${profile.contextHeading}</p>`;
+    html += `<ul class="tip-list">`;
+    profile.contextTips.forEach(t => { html += `<li>${t}</li>`; });
+    html += `</ul>`;
+
+    return html;
+}
+
+function buildVARKResultsHTML(keys) {
+    if (keys[0] === 'M') {
+        return buildProfileHTML(varkProfiles.M, false);
+    }
+    return keys.map((k, i) => {
+        let html = buildProfileHTML(varkProfiles[k], false);
+        if (i < keys.length - 1) html += `<hr class="profile-divider">`;
+        return html;
+    }).join('');
+}
+
+function buildHMResultsHTML(keys) {
+    return keys.map((k, i) => {
+        let html = buildProfileHTML(hmProfiles[k], true);
+        if (i < keys.length - 1) html += `<hr class="profile-divider">`;
+        return html;
+    }).join('');
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  PDF GENERATION                                             ║
+// ╚══════════════════════════════════════════════════════════════╝
+function buildPDFTemplateHTML() {
+    const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+    const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
+    const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+
+    const varkTitles = state.varkResult.map(k => varkLabels[k] || k).join(' & ');
+    const hmTitles   = state.hmResult.map(k => hmLabels[k] || k).join(' & ');
+
+    function profileToPDF(profile, showStrengths) {
+        let html = `<h2 style="color:#004F5E;font-size:1.2rem;margin:0 0 10px;">${profile.title}</h2>`;
+        html += `<p style="color:#2C3E50;margin:0 0 14px;line-height:1.7;font-size:0.93rem;">${profile.intro}</p>`;
+
+        if (showStrengths && profile.strengths) {
+            html += `<p style="font-weight:700;color:#004F5E;margin:14px 0 6px;font-size:0.88rem;">STRENGTHS</p><ul style="margin:0 0 10px;padding-left:20px;">`;
+            profile.strengths.forEach(s => { html += `<li style="margin-bottom:4px;font-size:0.88rem;color:#2C3E50;">${s}</li>`; });
+            html += `</ul>`;
+            html += `<p style="font-weight:700;color:#004F5E;margin:14px 0 6px;font-size:0.88rem;">WATCH OUT FOR</p><ul style="margin:0 0 10px;padding-left:20px;">`;
+            profile.watchouts.forEach(w => { html += `<li style="margin-bottom:4px;font-size:0.88rem;color:#2C3E50;">${w}</li>`; });
+            html += `</ul>`;
+        }
+
+        html += `<p style="font-weight:700;color:#004F5E;margin:14px 0 6px;font-size:0.88rem;">${profile.studyHeading.toUpperCase()}</p><ul style="margin:0 0 10px;padding-left:20px;">`;
+        profile.studyTips.forEach(t => { html += `<li style="margin-bottom:5px;font-size:0.88rem;color:#2C3E50;">${t}</li>`; });
+        html += `</ul>`;
+
+        html += `<p style="font-style:italic;color:#5A7280;margin:12px 0 6px;font-size:0.85rem;">${profile.contextHeading}</p><ul style="margin:0 0 10px;padding-left:20px;">`;
+        profile.contextTips.forEach(t => { html += `<li style="margin-bottom:5px;font-size:0.88rem;color:#2C3E50;">${t}</li>`; });
+        html += `</ul>`;
+
+        return html;
+    }
+
+    let varkContent = '';
+    if (state.varkResult[0] === 'M') {
+        varkContent = profileToPDF(varkProfiles.M, false);
+    } else {
+        varkContent = state.varkResult.map(k => profileToPDF(varkProfiles[k], false)).join('<hr style="border:none;border-top:1px dashed #CCDDE2;margin:20px 0;">');
+    }
+
+    let hmContent = state.hmResult.map(k => profileToPDF(hmProfiles[k], true)).join('<hr style="border:none;border-top:1px dashed #CCDDE2;margin:20px 0;">');
+
+    return `
+    <div style="font-family:Arial,sans-serif;color:#2C3E50;max-width:680px;margin:0 auto;padding:32px;">
+
+      <!-- Header -->
+      <div style="background:#004F5E;padding:24px 28px;border-radius:6px;margin-bottom:28px;display:flex;align-items:center;gap:16px;">
+        <img src="https://dentalnurse.training/wp-content/uploads/2023/05/WEBLOGO.png" alt="Dental Nurse Training" style="height:50px;width:auto;" onerror="this.style.display='none'">
+        <div>
+          <p style="color:#ffffff;font-size:1.15rem;font-weight:700;margin:0;letter-spacing:0.01em;">Learning Style Results</p>
+          <p style="color:rgba(255,255,255,0.75);font-size:0.82rem;margin:2px 0 0;">Dental Nurse Training</p>
+        </div>
+      </div>
+
+      <!-- Learner details -->
+      <div style="background:#E6F3F5;border-radius:6px;padding:18px 22px;margin-bottom:24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.92rem;">
+          <tr><td style="padding:3px 0;color:#5A7280;width:140px;">Name</td><td style="font-weight:700;color:#004F5E;">${state.name}</td></tr>
+          <tr><td style="padding:3px 0;color:#5A7280;">Course</td><td style="color:#2C3E50;">${state.course}</td></tr>
+          <tr><td style="padding:3px 0;color:#5A7280;">Date completed</td><td style="color:#2C3E50;">${today}</td></tr>
+          <tr><td style="padding:3px 0;color:#5A7280;">VARK style</td><td style="font-weight:700;color:#004F5E;">${varkTitles}</td></tr>
+          <tr><td style="padding:3px 0;color:#5A7280;">Learning approach</td><td style="font-weight:700;color:#004F5E;">${hmTitles}</td></tr>
+        </table>
+      </div>
+
+      <!-- Intro -->
+      <div style="background:#004F5E;color:#ffffff;border-radius:6px;padding:20px 24px;margin-bottom:24px;font-size:0.9rem;line-height:1.7;">
+        <p style="margin:0 0 10px;">You have two learning profiles. Your VARK result tells you how you prefer to take in and process information. Your learning approach result tells you how you prefer to engage with learning as a whole. Together, they give you a more complete picture of how you learn best.</p>
+        <p style="margin:0;">There is no right or wrong result. Every style has real strengths. The goal is simply to understand yourself better so you can study smarter, not harder.</p>
+      </div>
+
+      <!-- VARK -->
+      <div style="border:2px solid #E6F3F5;border-radius:6px;padding:22px 24px;margin-bottom:20px;">
+        <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#006B7D;border-bottom:2px solid #E6F3F5;padding-bottom:8px;margin-bottom:18px;">Your VARK Learning Style</p>
+        ${varkContent}
+      </div>
+
+      <!-- H&M -->
+      <div style="border:2px solid #E6F3F5;border-radius:6px;padding:22px 24px;margin-bottom:20px;">
+        <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#006B7D;border-bottom:2px solid #E6F3F5;padding-bottom:8px;margin-bottom:18px;">Your Learning Approach</p>
+        ${hmContent}
+      </div>
+
+      <!-- Footer -->
+      <div style="text-align:center;color:#5A7280;font-size:0.8rem;border-top:1px solid #CCDDE2;padding-top:16px;margin-top:8px;">
+        Dental Nurse Training Ltd &nbsp;|&nbsp; dentalnurse.training
+      </div>
+
+    </div>`;
+}
+
+function downloadPDF() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = 'Generating PDF…';
+
+    const template = document.getElementById('pdf-template');
+    template.style.display = 'block';
+    template.innerHTML = buildPDFTemplateHTML();
+
+    const options = {
+        margin:      [10, 10, 10, 10],
+        filename:    `DNT_Learning_Style_Results_${state.name.replace(/\s+/g,'_')}.pdf`,
+        image:       { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(options).from(template).save().then(() => {
+        template.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = '📄 Download results as PDF';
+    }).catch(err => {
+        console.error(err);
+        template.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = '📄 Download results as PDF';
+        alert('There was a problem generating the PDF. Please try again.');
+    });
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  EMAIL (EmailJS)                                            ║
+// ╚══════════════════════════════════════════════════════════════╝
+function buildResultsSummaryText() {
+    const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
+    const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+    const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+    let lines = [];
+    lines.push(`Name: ${state.name}`);
+    lines.push(`Course: ${state.course}`);
+    lines.push(`Date: ${today}`);
+    lines.push('');
+    lines.push(`VARK Learning Style: ${state.varkResult.map(k => varkLabels[k]||k).join(' & ')}`);
+    lines.push(`Learning Approach: ${state.hmResult.map(k => hmLabels[k]||k).join(' & ')}`);
+    lines.push('');
+
+    state.varkResult.forEach(k => {
+        const p = k === 'M' ? varkProfiles.M : varkProfiles[k];
+        lines.push('─────────────────────────────────');
+        lines.push(p.title);
+        lines.push(p.intro);
+        lines.push('');
+        lines.push(p.studyHeading);
+        p.studyTips.forEach(t => lines.push(`  • ${t}`));
+        lines.push('');
+        lines.push(p.contextHeading);
+        p.contextTips.forEach(t => lines.push(`  • ${t}`));
+        lines.push('');
+    });
+
+    state.hmResult.forEach(k => {
+        const p = hmProfiles[k];
+        lines.push('─────────────────────────────────');
+        lines.push(p.title);
+        lines.push(p.intro);
+        lines.push('');
+        lines.push(p.studyHeading);
+        p.studyTips.forEach(t => lines.push(`  • ${t}`));
+        lines.push('');
+        lines.push(p.contextHeading);
+        p.contextTips.forEach(t => lines.push(`  • ${t}`));
+        lines.push('');
+    });
+
+    lines.push('─────────────────────────────────');
+    lines.push('Dental Nurse Training Ltd | dentalnurse.training');
+
+    return lines.join('\n');
+}
+
+function sendEmail() {
+    const emailInput = document.getElementById('inp-email');
+    const statusEl   = document.getElementById('email-status');
+    const sendBtn    = event.target;
+    const email      = emailInput.value.trim();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        statusEl.className = 'send-status err';
+        statusEl.textContent = 'Please enter a valid email address.';
+        statusEl.classList.remove('hidden');
+        return;
+    }
+
+    // Check that EmailJS has been configured
+    if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
+        statusEl.className = 'send-status err';
+        statusEl.textContent = 'Email sending is not yet configured. Please download your results using the PDF button above.';
+        statusEl.classList.remove('hidden');
+        return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+    statusEl.classList.add('hidden');
+
+    const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+    const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
+    const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+
+    const params = {
+        to_email:        email,
+        cc_email:        DNT_COPY_EMAIL,
+        learner_name:    state.name,
+        learner_course:  state.course,
+        date_completed:  today,
+        vark_style:      state.varkResult.map(k => varkLabels[k]||k).join(' & '),
+        hm_style:        state.hmResult.map(k => hmLabels[k]||k).join(' & '),
+        results_summary: buildResultsSummaryText()
+    };
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+        .then(() => {
+            statusEl.className = 'send-status ok';
+            statusEl.textContent = `Your results have been sent to ${email}. Please check your inbox (and spam folder if needed).`;
+            statusEl.classList.remove('hidden');
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send my results';
+        })
+        .catch(err => {
+            console.error('EmailJS error:', err);
+            statusEl.className = 'send-status err';
+            statusEl.textContent = 'There was a problem sending the email. Please download your results as a PDF instead.';
+            statusEl.classList.remove('hidden');
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send my results';
+        });
+}
+</script>
+
+</body>
+</html>
