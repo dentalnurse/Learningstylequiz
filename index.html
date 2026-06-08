@@ -185,7 +185,8 @@
             color: var(--text);
         }
         input[type="text"],
-        input[type="email"] {
+        input[type="email"],
+        select {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid var(--border);
@@ -196,7 +197,9 @@
             transition: border-color 0.2s;
             background: #fff;
         }
-        input:focus { outline: none; border-color: var(--primary); }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7280' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; cursor: pointer; }
+        select option[value=""] { color: #AABCC2; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
         input::placeholder { color: #AABCC2; }
 
         /* ── Start screen ────────────────────────── */
@@ -592,6 +595,17 @@
                 <label for="inp-course">Course you are enrolled on</label>
                 <input type="text" id="inp-course" placeholder="e.g. Certificate in Dental Nursing">
                 <div id="err-course" class="field-error hidden">Please enter your course to continue.</div>
+            </div>
+            <div class="form-group">
+                <label for="inp-assessor">Your assessor</label>
+                <select id="inp-assessor">
+                    <option value="">Select your assessor</option>
+                    <option value="Emily">Emily</option>
+                    <option value="Erica">Erica</option>
+                    <option value="Angela">Angela</option>
+                    <option value="Sarah">Sarah</option>
+                </select>
+                <div id="err-assessor" class="field-error hidden">Please select your assessor to continue.</div>
             </div>
             <button class="btn btn-primary btn-lg" onclick="startQuiz()">Begin the Quiz</button>
         </div>
@@ -1139,6 +1153,7 @@ const hmProfiles = {
 const state = {
     name:       '',
     course:     '',
+    assessor:   '',
     screen:     'start',       // start | vark | transition | hm | results
     varkIdx:    0,
     hmIdx:      0,
@@ -1175,12 +1190,14 @@ function showScreen(id) {
 // ║  START                                                      ║
 // ╚══════════════════════════════════════════════════════════════╝
 function startQuiz() {
-    const name   = document.getElementById('inp-name').value.trim();
-    const course = document.getElementById('inp-course').value.trim();
+    const name     = document.getElementById('inp-name').value.trim();
+    const course   = document.getElementById('inp-course').value.trim();
+    const assessor = document.getElementById('inp-assessor').value;
     let ok = true;
 
     document.getElementById('err-name').classList.add('hidden');
     document.getElementById('err-course').classList.add('hidden');
+    document.getElementById('err-assessor').classList.add('hidden');
 
     if (!name) {
         document.getElementById('err-name').classList.remove('hidden');
@@ -1190,10 +1207,15 @@ function startQuiz() {
         document.getElementById('err-course').classList.remove('hidden');
         ok = false;
     }
+    if (!assessor) {
+        document.getElementById('err-assessor').classList.remove('hidden');
+        ok = false;
+    }
     if (!ok) return;
 
-    state.name   = name;
-    state.course = course;
+    state.name     = name;
+    state.course   = course;
+    state.assessor = assessor;
     state.varkIdx = 0;
     state.varkSel = {};
 
@@ -1565,6 +1587,7 @@ function downloadPDF() {
         const fields = [
             ['Name',              state.name,                                                    true],
             ['Course',            state.course,                                                  false],
+            ['Assessor',          state.assessor,                                                false],
             ['Date completed',    today,                                                         false],
             ['VARK style',        state.varkResult.map(k => varkLabels[k]||k).join(' & '),      true],
             ['Learning approach', state.hmResult.map(k => hmLabels[k]||k).join(' & '),          true]
@@ -1736,6 +1759,7 @@ function buildResultsSummaryText() {
     let lines = [];
     lines.push(`Name: ${state.name}`);
     lines.push(`Course: ${state.course}`);
+    lines.push(`Assessor: ${state.assessor}`);
     lines.push(`Date: ${today}`);
     lines.push('');
     lines.push(`VARK Learning Style: ${state.varkResult.map(k => varkLabels[k]||k).join(' & ')}`);
@@ -1802,6 +1826,7 @@ function sendEmail() {
         to_email:        email,
         learner_name:    state.name,
         learner_course:  state.course,
+        learner_assessor: state.assessor,
         date_completed:  today,
         vark_style:      state.varkResult.map(k => varkLabels[k]||k).join(' & '),
         hm_style:        state.hmResult.map(k => hmLabels[k]||k).join(' & '),
@@ -1834,6 +1859,7 @@ function autoEmailEmily() {
         to_email:        'emily@dentalnurse.training',
         learner_name:    state.name,
         learner_course:  state.course,
+        learner_assessor: state.assessor,
         date_completed:  today,
         vark_style:      state.varkResult.map(k => varkLabels[k]||k).join(' & '),
         hm_style:        state.hmResult.map(k => hmLabels[k]||k).join(' & '),
