@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         :root {
@@ -551,15 +551,6 @@
             main { margin: 20px auto; }
         }
 
-        /* ── Hidden PDF template ─────────────────── */
-        #pdf-template {
-            position: fixed;
-            left: -9999px;
-            top: 0;
-            width: 800px;
-            background: #ffffff;
-            font-family: Arial, sans-serif;
-        }
     </style>
 </head>
 <body>
@@ -716,9 +707,6 @@
     </div><!-- /#screen-results -->
 
 </main>
-
-<!-- Hidden PDF template - populated before generating PDF -->
-<div id="pdf-template"></div>
 
 <footer>
     <p>Dental Nurse Training Ltd &nbsp;|&nbsp; <a href="https://dentalnurse.training" target="_blank">dentalnurse.training</a></p>
@@ -1429,9 +1417,9 @@ function buildHMResultsHTML(keys) {
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  PDF GENERATION                                             ║
+// ║  PDF GENERATION (jsPDF direct — no html2canvas)            ║
 // ╚══════════════════════════════════════════════════════════════╝
-function buildPDFTemplateHTML() {
+function buildPDFTemplateHTML() { // kept as dead code, replaced by downloadPDF below
     const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
 
     const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
@@ -1527,30 +1515,213 @@ function downloadPDF() {
     btn.disabled = true;
     btn.textContent = 'Generating PDF…';
 
-    const template = document.getElementById('pdf-template');
-    template.innerHTML = buildPDFTemplateHTML();
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-    // Allow the browser to fully render the content before capturing
-    setTimeout(() => {
-        const options = {
-            margin:      [10, 10, 10, 10],
-            filename:    `DNT_Learning_Style_Results_${state.name.replace(/\s+/g,'_')}.pdf`,
-            image:       { type: 'jpeg', quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
-            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+        const PW = 210, PH = 297, M = 18, CW = 174;
+        let y = M;
+
+        const COL = {
+            tealDark:  [0,  79,  94],
+            teal:      [0, 107, 125],
+            tealLight: [230, 243, 245],
+            white:     [255, 255, 255],
+            text:      [44,  62,  80],
+            muted:     [90, 114, 128],
+            amber:     [255, 246, 230],
+            amberText: [92,  64,   0]
         };
 
-        html2pdf().set(options).from(template).save().then(() => {
-            btn.disabled = false;
-            btn.textContent = '📄 Download results as PDF';
-        }).catch(err => {
-            console.error(err);
-            btn.disabled = false;
-            btn.textContent = '📄 Download results as PDF';
-            alert('There was a problem generating the PDF. Please try again.');
+        const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+        const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
+        const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+
+        const fc = c => doc.setFillColor(...c);
+        const tc = c => doc.setTextColor(...c);
+        const dc = c => doc.setDrawColor(...c);
+        const lw = w => doc.setLineWidth(w);
+
+        function newPage() { doc.addPage(); y = M; }
+        function guard(h)  { if (y + h > PH - M) newPage(); }
+
+        function hline(color, weight) {
+            dc(color); lw(weight || 0.25);
+            doc.line(M, y, M + CW, y);
+        }
+
+        // ── HEADER ──────────────────────────────────────
+        fc(COL.tealDark);
+        doc.roundedRect(M, y, CW, 18, 2, 2, 'F');
+        tc(COL.white);
+        doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+        doc.text('Learning Style Results', M + 5, y + 8);
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        doc.text('Dental Nurse Training', M + 5, y + 14);
+        y += 23;
+
+        // ── DETAILS BOX ─────────────────────────────────
+        const fields = [
+            ['Name',              state.name,                                                    true],
+            ['Course',            state.course,                                                  false],
+            ['Date completed',    today,                                                         false],
+            ['VARK style',        state.varkResult.map(k => varkLabels[k]||k).join(' & '),      true],
+            ['Learning approach', state.hmResult.map(k => hmLabels[k]||k).join(' & '),          true]
+        ];
+        const RH = 6.5;
+        fc(COL.tealLight);
+        doc.roundedRect(M, y, CW, fields.length * RH + 7, 2, 2, 'F');
+        y += 5;
+        fields.forEach(([lbl, val, bold]) => {
+            doc.setFontSize(9); doc.setFont('helvetica','normal'); tc(COL.muted);
+            doc.text(lbl, M + 4, y);
+            doc.setFont('helvetica', bold ? 'bold' : 'normal');
+            tc(bold ? COL.tealDark : COL.text);
+            doc.text(val, M + 47, y);
+            y += RH;
         });
-    }, 500);
+        y += 4;
+
+        // ── INTRO BOX ────────────────────────────────────
+        const introParas = [
+            'You have two learning profiles. Your VARK result tells you how you prefer to take in and process',
+            'information. Your learning approach result tells you how you prefer to engage with learning as a',
+            'whole. Together, they give you a more complete picture of how you learn best.',
+            '',
+            'There is no right or wrong result. Every style has real strengths. The goal is simply to',
+            'understand yourself better so you can study smarter, not harder.'
+        ];
+        const ILH = 5, introH = introParas.length * ILH + 10;
+        fc(COL.tealDark);
+        doc.roundedRect(M, y, CW, introH, 2, 2, 'F');
+        y += 6;
+        doc.setFontSize(9); doc.setFont('helvetica','normal'); tc(COL.white);
+        introParas.forEach(line => { if (line) doc.text(line, M + 4, y); y += ILH; });
+        y += 5;
+
+        // ── Profile renderer ────────────────────────────
+        function renderProfile(profile, showStrengths) {
+            // Title
+            guard(12);
+            doc.setFontSize(12); doc.setFont('helvetica','bold'); tc(COL.tealDark);
+            const tLines = doc.splitTextToSize(profile.title, CW);
+            doc.text(tLines, M, y);
+            y += tLines.length * 6 + 3;
+
+            // Intro paragraph
+            doc.setFontSize(9.5); doc.setFont('helvetica','normal'); tc(COL.text);
+            const pLines = doc.splitTextToSize(profile.intro, CW);
+            guard(pLines.length * 5);
+            doc.text(pLines, M, y);
+            y += pLines.length * 5 + 5;
+
+            // Strengths / Watch out
+            if (showStrengths && profile.strengths) {
+                const colW = (CW - 3) / 2;
+                const rows = Math.max(profile.strengths.length, profile.watchouts.length);
+                const boxH = rows * 6 + 14;
+                guard(boxH + 4);
+                const bY = y;
+
+                fc(COL.tealLight); doc.roundedRect(M,           bY, colW, boxH, 2, 2, 'F');
+                fc(COL.amber);     doc.roundedRect(M+colW+3,    bY, colW, boxH, 2, 2, 'F');
+
+                doc.setFontSize(7); doc.setFont('helvetica','bold');
+                tc(COL.tealDark);  doc.text('STRENGTHS',      M+3,       bY+6);
+                tc(COL.amberText); doc.text('WATCH OUT FOR',  M+colW+6,  bY+6);
+
+                doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+                let sY = bY + 12;
+                profile.strengths.forEach(s => {
+                    tc(COL.text);
+                    const ls = doc.splitTextToSize('• ' + s, colW - 6);
+                    doc.text(ls, M+3, sY); sY += ls.length * 5 + 1;
+                });
+                let wY = bY + 12;
+                profile.watchouts.forEach(w => {
+                    tc(COL.amberText);
+                    const ls = doc.splitTextToSize('• ' + w, colW - 6);
+                    doc.text(ls, M+colW+6, wY); wY += ls.length * 5 + 1;
+                });
+                y = bY + boxH + 5;
+            }
+
+            // Study tips heading
+            guard(8);
+            doc.setFontSize(9); doc.setFont('helvetica','bold'); tc(COL.tealDark);
+            doc.text(profile.studyHeading, M, y); y += 6;
+
+            profile.studyTips.forEach(tip => {
+                const ls = doc.splitTextToSize(tip, CW - 7);
+                guard(ls.length * 5 + 3);
+                doc.setFontSize(9); doc.setFont('helvetica','bold'); tc(COL.teal);
+                doc.text('>', M+1, y);
+                doc.setFont('helvetica','normal'); tc(COL.text);
+                doc.text(ls, M+6, y);
+                y += ls.length * 5 + 1.5;
+                hline(COL.tealLight, 0.2); y += 1.5;
+            });
+            y += 2;
+
+            // Context tips
+            guard(8);
+            doc.setFontSize(9); doc.setFont('helvetica','italic'); tc(COL.muted);
+            doc.text(profile.contextHeading, M, y); y += 5;
+
+            profile.contextTips.forEach(tip => {
+                const ls = doc.splitTextToSize(tip, CW - 7);
+                guard(ls.length * 5 + 3);
+                doc.setFontSize(9); doc.setFont('helvetica','bold'); tc(COL.teal);
+                doc.text('>', M+1, y);
+                doc.setFont('helvetica','normal'); tc(COL.text);
+                doc.text(ls, M+6, y);
+                y += ls.length * 5 + 1.5;
+                hline(COL.tealLight, 0.2); y += 1.5;
+            });
+            y += 5;
+        }
+
+        // ── Section header ───────────────────────────────
+        function sectionHeader(title) {
+            guard(12);
+            doc.setFontSize(7.5); doc.setFont('helvetica','bold'); tc(COL.teal);
+            doc.text(title, M, y); y += 2;
+            hline(COL.tealLight, 1); y += 6;
+        }
+
+        // ── VARK ─────────────────────────────────────────
+        sectionHeader('YOUR VARK LEARNING STYLE');
+        if (state.varkResult[0] === 'M') {
+            renderProfile(varkProfiles.M, false);
+        } else {
+            state.varkResult.forEach((k, i) => {
+                renderProfile(varkProfiles[k], false);
+                if (i < state.varkResult.length - 1) { hline(COL.tealLight, 0.5); y += 4; }
+            });
+        }
+
+        // ── H&M ──────────────────────────────────────────
+        sectionHeader('YOUR LEARNING APPROACH');
+        state.hmResult.forEach((k, i) => {
+            renderProfile(hmProfiles[k], true);
+            if (i < state.hmResult.length - 1) { hline(COL.tealLight, 0.5); y += 4; }
+        });
+
+        // ── FOOTER ───────────────────────────────────────
+        guard(8);
+        hline(COL.tealLight, 0.3); y += 5;
+        doc.setFontSize(8); doc.setFont('helvetica','normal'); tc(COL.muted);
+        doc.text('Dental Nurse Training Ltd  |  dentalnurse.training', PW/2, y, { align:'center' });
+
+        doc.save(`DNT_Learning_Style_Results_${state.name.replace(/\s+/g,'_')}.pdf`);
+
+    } catch(err) {
+        console.error('PDF error:', err);
+        alert('There was a problem generating the PDF. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '📄 Download results as PDF';
+    }
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
