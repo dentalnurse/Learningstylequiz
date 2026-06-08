@@ -1552,7 +1552,7 @@ function buildHMResultsHTML(keys) {
         legend += `<div class="hm-legend-item">
             <span class="hm-dot" style="background:${HM_COLORS[key]}"></span>
             <span class="hm-legend-name${isDom ? ' dominant' : ''}">${hmLabels[key]}</span>
-            <span class="hm-legend-score">${scores[key]} / 20</span>
+            <span class="hm-legend-score">${Math.round(scores[key] / total * 100)}%</span>
         </div>`;
     });
     legend += `</div>`;
