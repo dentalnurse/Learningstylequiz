@@ -553,8 +553,12 @@
 
         /* ── Hidden PDF template ─────────────────── */
         #pdf-template {
-            display: none;
-            font-family: 'Lato', Arial, sans-serif;
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 800px;
+            background: #ffffff;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
@@ -1524,29 +1528,29 @@ function downloadPDF() {
     btn.textContent = 'Generating PDF…';
 
     const template = document.getElementById('pdf-template');
-    template.style.display = 'block';
     template.innerHTML = buildPDFTemplateHTML();
 
-    const options = {
-        margin:      [10, 10, 10, 10],
-        filename:    `DNT_Learning_Style_Results_${state.name.replace(/\s+/g,'_')}.pdf`,
-        image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+    // Allow the browser to fully render the content before capturing
+    setTimeout(() => {
+        const options = {
+            margin:      [10, 10, 10, 10],
+            filename:    `DNT_Learning_Style_Results_${state.name.replace(/\s+/g,'_')}.pdf`,
+            image:       { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+        };
 
-    html2pdf().set(options).from(template).save().then(() => {
-        template.style.display = 'none';
-        btn.disabled = false;
-        btn.textContent = '📄 Download results as PDF';
-    }).catch(err => {
-        console.error(err);
-        template.style.display = 'none';
-        btn.disabled = false;
-        btn.textContent = '📄 Download results as PDF';
-        alert('There was a problem generating the PDF. Please try again.');
-    });
+        html2pdf().set(options).from(template).save().then(() => {
+            btn.disabled = false;
+            btn.textContent = '📄 Download results as PDF';
+        }).catch(err => {
+            console.error(err);
+            btn.disabled = false;
+            btn.textContent = '📄 Download results as PDF';
+            alert('There was a problem generating the PDF. Please try again.');
+        });
+    }, 500);
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
