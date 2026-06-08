@@ -474,6 +474,17 @@
             margin: 28px 0;
         }
 
+        .also-scored {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: var(--primary-light);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        .also-scored strong { color: var(--primary-dark); }
+
         /* ── Save / Email section ────────────────── */
         .save-section h3 {
             font-size: 1.1rem;
@@ -1159,10 +1170,12 @@ const state = {
     hmIdx:      0,
     varkSel:    {},            // { questionIndex: ['V','R', ...] }
     hmSel:      {},            // { questionIndex: 1|2|3|4 }
-    varkScores: { V:0, A:0, R:0, K:0 },
-    hmScores:   { activist:0, reflector:0, theorist:0, pragmatist:0 },
-    varkResult: [],            // dominant style keys
-    hmResult:   []             // dominant style keys
+    varkScores:    { V:0, A:0, R:0, K:0 },
+    hmScores:      { activist:0, reflector:0, theorist:0, pragmatist:0 },
+    varkResult:    [],          // top 1-2 dominant style keys (or ['M'])
+    varkSecondary: [],          // styles that qualified but fall outside the top 2
+    hmResult:      [],          // top 1-2 dominant style keys
+    hmSecondary:   []           // styles that qualified but fall outside the top 2
 };
 
 // H&M category mapping by 0-based index
@@ -1283,14 +1296,18 @@ function finishVARK() {
     });
     state.varkScores = scores;
 
-    // Determine result
+    // Determine result — sorted descending so highest score is always first
     const max = Math.max(...Object.values(scores));
-    const near = Object.keys(scores).filter(k => scores[k] >= max - 2);
+    const near = Object.keys(scores)
+        .filter(k => scores[k] >= max - 2)
+        .sort((a, b) => scores[b] - scores[a]);
 
     if (near.length >= 3) {
-        state.varkResult = ['M'];
+        state.varkResult    = ['M'];
+        state.varkSecondary = [];
     } else {
-        state.varkResult = near.length > 0 ? near : [Object.keys(scores).reduce((a,b) => scores[a] >= scores[b] ? a : b)];
+        state.varkResult    = near.length > 0 ? near.slice(0, 2) : [Object.keys(scores).reduce((a,b) => scores[a] >= scores[b] ? a : b)];
+        state.varkSecondary = near.slice(2);
     }
 
     showScreen('screen-transition');
@@ -1359,10 +1376,14 @@ function finishHM() {
     });
     state.hmScores = scores;
 
-    // Determine result
+    // Determine result — sorted descending, capped at 2, remainder stored as secondary
     const max = Math.max(...Object.values(scores));
-    const near = Object.keys(scores).filter(k => scores[k] >= max - 3);
-    state.hmResult = near.length > 0 ? near : [Object.keys(scores).reduce((a,b) => scores[a]>=scores[b]?a:b)];
+    const near = Object.keys(scores)
+        .filter(k => scores[k] >= max - 3)
+        .sort((a, b) => scores[b] - scores[a]);
+    const primary = near.length > 0 ? near.slice(0, 2) : [Object.keys(scores).reduce((a,b) => scores[a]>=scores[b]?a:b)];
+    state.hmResult    = primary;
+    state.hmSecondary = near.slice(2);
 
     buildResults();
     showScreen('screen-results');
@@ -1421,22 +1442,37 @@ function buildProfileHTML(profile, showStrengths) {
 }
 
 function buildVARKResultsHTML(keys) {
+    const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic' };
+    let html;
     if (keys[0] === 'M') {
-        return buildProfileHTML(varkProfiles.M, false);
+        html = buildProfileHTML(varkProfiles.M, false);
+    } else {
+        html = keys.map((k, i) => {
+            let h = buildProfileHTML(varkProfiles[k], false);
+            if (i < keys.length - 1) h += `<hr class="profile-divider">`;
+            return h;
+        }).join('');
     }
-    return keys.map((k, i) => {
-        let html = buildProfileHTML(varkProfiles[k], false);
-        if (i < keys.length - 1) html += `<hr class="profile-divider">`;
-        return html;
-    }).join('');
+    if (state.varkSecondary.length > 0) {
+        const names = state.varkSecondary.map(k => `<strong>${varkLabels[k] || k}</strong>`).join(' and ');
+        html += `<div class="also-scored">You also scored highly in ${names}. While not your dominant style, you may find some of those strategies useful too.</div>`;
+    }
+    return html;
 }
 
 function buildHMResultsHTML(keys) {
-    return keys.map((k, i) => {
-        let html = buildProfileHTML(hmProfiles[k], true);
-        if (i < keys.length - 1) html += `<hr class="profile-divider">`;
-        return html;
+    const hmLabels = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+    let html = keys.map((k, i) => {
+        let h = buildProfileHTML(hmProfiles[k], true);
+        if (i < keys.length - 1) h += `<hr class="profile-divider">`;
+        return h;
     }).join('');
+    if (state.hmSecondary.length > 0) {
+        const names = state.hmSecondary.map(k => `<strong>${hmLabels[k] || k}</strong>`).join(' and ');
+        const word  = state.hmSecondary.length === 1 ? 'style' : 'styles';
+        html += `<div class="also-scored">You also scored highly in the ${names} ${word}. While not your dominant approach, you may find some of those characteristics recognisable in how you work.</div>`;
+    }
+    return html;
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
@@ -1763,7 +1799,9 @@ function buildResultsSummaryText() {
     lines.push(`Date: ${today}`);
     lines.push('');
     lines.push(`VARK Learning Style: ${state.varkResult.map(k => varkLabels[k]||k).join(' & ')}`);
+    if (state.varkSecondary.length > 0) lines.push(`Also scored highly in (VARK): ${state.varkSecondary.map(k => varkLabels[k]||k).join(', ')}`);
     lines.push(`Learning Approach: ${state.hmResult.map(k => hmLabels[k]||k).join(' & ')}`);
+    if (state.hmSecondary.length > 0) lines.push(`Also scored highly in (Approach): ${state.hmSecondary.map(k => hmLabels[k]||k).join(', ')}`);
     lines.push('');
 
     state.varkResult.forEach(k => {
