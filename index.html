@@ -1351,7 +1351,7 @@ function finishVARK() {
     });
     state.varkScores = scores;
 
-    // Determine result — sorted descending so highest score is always first
+    // Determine result -  sorted descending so highest score is always first
     const max = Math.max(...Object.values(scores));
     const near = Object.keys(scores)
         .filter(k => scores[k] >= max - 2)
@@ -1431,7 +1431,7 @@ function finishHM() {
     });
     state.hmScores = scores;
 
-    // Determine result — sorted descending, capped at 2, remainder stored as secondary
+    // Determine result -  sorted descending, capped at 2, remainder stored as secondary
     const max = Math.max(...Object.values(scores));
     const near = Object.keys(scores)
         .filter(k => scores[k] >= max - 3)
@@ -1598,7 +1598,7 @@ function buildHMExplanation(keys) {
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  PDF GENERATION (jsPDF direct — no html2canvas)            ║
+// ║  PDF GENERATION (jsPDF direct -  no html2canvas)            ║
 // ╚══════════════════════════════════════════════════════════════╝
 function buildPDFTemplateHTML() { // kept as dead code, replaced by downloadPDF below
     const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
@@ -1882,7 +1882,7 @@ function downloadPDF() {
             });
         }
 
-        // ── H&M — bar chart + explanation ────────────────
+        // ── H&M -  bar chart + explanation ────────────────
         sectionHeader('YOUR LEARNING APPROACH');
         const hmOrder  = ['activist','reflector','theorist','pragmatist'];
         const hmLbls   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
