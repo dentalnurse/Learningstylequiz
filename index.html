@@ -485,6 +485,61 @@
         }
         .also-scored strong { color: var(--primary-dark); }
 
+        /* ── H&M Donut Chart ─────────────────────── */
+        .hm-chart-wrap {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .hm-legend {
+            flex: 1;
+            min-width: 170px;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+        }
+        .hm-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hm-dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .hm-legend-name {
+            flex: 1;
+            font-size: 0.93rem;
+            color: var(--text);
+        }
+        .hm-legend-name.dominant { font-weight: 700; color: var(--primary-dark); }
+        .hm-legend-score {
+            font-size: 0.87rem;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        .hm-dominant-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .hm-explanation {
+            color: var(--text);
+            line-height: 1.78;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        @media (max-width: 500px) {
+            .hm-chart-wrap { flex-direction: column; align-items: flex-start; }
+        }
+
         /* ── Save / Email section ────────────────── */
         .save-section h3 {
             font-size: 1.1rem;
@@ -1460,19 +1515,86 @@ function buildVARKResultsHTML(keys) {
     return html;
 }
 
+const HM_COLORS = {
+    activist:   '#E07B39',
+    reflector:  '#006B7D',
+    theorist:   '#004F5E',
+    pragmatist: '#00B5CC'
+};
+
 function buildHMResultsHTML(keys) {
     const hmLabels = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
-    let html = keys.map((k, i) => {
-        let h = buildProfileHTML(hmProfiles[k], true);
-        if (i < keys.length - 1) h += `<hr class="profile-divider">`;
-        return h;
-    }).join('');
-    if (state.hmSecondary.length > 0) {
-        const names = state.hmSecondary.map(k => `<strong>${hmLabels[k] || k}</strong>`).join(' and ');
-        const word  = state.hmSecondary.length === 1 ? 'style' : 'styles';
-        html += `<div class="also-scored">You also scored highly in the ${names} ${word}. While not your dominant approach, you may find some of those characteristics recognisable in how you work.</div>`;
+    const scores   = state.hmScores;
+    const order    = ['activist','reflector','theorist','pragmatist'];
+    const total    = order.reduce((s, k) => s + scores[k], 0) || 1;
+
+    // SVG donut chart using stroke-dasharray stacking
+    const r = 58, cx = 90, cy = 90, circ = 2 * Math.PI * r;
+    let cumPct = 0;
+    let segs = '';
+    order.forEach(key => {
+        const pct = scores[key] / total;
+        const dash = (pct * circ).toFixed(2);
+        const gap  = (circ - pct * circ).toFixed(2);
+        const rot  = (cumPct * 360 - 90).toFixed(2);
+        segs += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${HM_COLORS[key]}" stroke-width="26" stroke-dasharray="${dash} ${gap}" transform="rotate(${rot} ${cx} ${cy})"/>`;
+        cumPct += pct;
+    });
+    const svg = `<svg viewBox="0 0 180 180" width="155" height="155" style="flex-shrink:0">
+        ${segs}
+        <circle cx="${cx}" cy="${cy}" r="44" fill="white"/>
+    </svg>`;
+
+    // Legend
+    let legend = `<div class="hm-legend">`;
+    order.forEach(key => {
+        const isDom = keys.includes(key);
+        legend += `<div class="hm-legend-item">
+            <span class="hm-dot" style="background:${HM_COLORS[key]}"></span>
+            <span class="hm-legend-name${isDom ? ' dominant' : ''}">${hmLabels[key]}</span>
+            <span class="hm-legend-score">${scores[key]} / 20</span>
+        </div>`;
+    });
+    legend += `</div>`;
+
+    const dominantLabel = `<p class="hm-dominant-label">Dominant approach: ${keys.map(k => hmLabels[k]).join(' &amp; ')}</p>`;
+    const explanation   = `<p class="hm-explanation">${buildHMExplanation(keys)}</p>`;
+
+    return `<div class="hm-chart-wrap">${svg}${legend}</div>${dominantLabel}${explanation}`;
+}
+
+function buildHMExplanation(keys) {
+    const hmLabels = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+
+    const singles = {
+        activist:   'You learn best by getting stuck in and trying things out. You are energised by challenge, variety, and hands-on activity - passive or repetitive learning tends to drain you. Short, active, varied study sessions will work far better for you than long blocks of reading.',
+        reflector:  'You learn best when you have space to think things through properly. You are thorough and considered, and you produce your best work when you are not rushed. Building in review time after each study session - rather than cramming - will be key to getting the most from your learning.',
+        theorist:   'You learn best when you understand the why behind everything. You like clear structure, solid reasoning, and a strong evidence base. Reading around your topics, looking for the logic behind guidelines and procedures, and making connections between ideas is how your learning really sticks.',
+        pragmatist: 'You learn best when you can clearly see how something applies to real life. You are focused, efficient, and motivated by practical outcomes. Connecting your course content directly to your clinical experience will make your learning feel purposeful and help it stick.'
+    };
+
+    const combos = {
+        'activist+reflector':   'You benefit from getting actively involved in your learning and then taking time to step back and reflect on what you experienced. This balance between action and reflection is a powerful combination - you learn best when you can do something and then properly consolidate it.',
+        'activist+theorist':    'You like to get involved and try things out, but you also want to understand the reasoning behind them. You will get the most from your learning when practical activity is paired with a clear explanation of the why - do not skip the theory, it feeds your understanding.',
+        'activist+pragmatist':  'You thrive when learning is hands-on, purposeful, and moves at a good pace. You are energised by challenge and motivated by real, visible results. Connecting your course content directly to what you do in the surgery will be one of your most effective learning strategies.',
+        'pragmatist+reflector': 'You combine careful, considered thinking with a strong focus on practical outcomes. You like to understand how things work in real life, and you do your best work when you have time to think before acting. Reflective accounts and portfolio evidence will be a genuinely useful learning tool for you, not just a box to tick.',
+        'pragmatist+theorist':  'You want to understand the logic behind things and see how they apply in practice. You are thorough, focused, and motivated by learning that has both a solid evidence base and clear real-world purpose. Try to always connect the theory you read to what you see and do in clinic.',
+        'reflector+theorist':   'You are a thoughtful, analytical learner who likes to take time, gather information, and build a thorough understanding before drawing conclusions. You work best with well-structured material and enough space to process things properly - do not rush the review stage of your learning.'
+    };
+
+    let text;
+    if (keys.length === 1) {
+        text = singles[keys[0]];
+    } else {
+        const comboKey = [...keys].sort().join('+');
+        text = combos[comboKey] || `Your results show a balance between ${keys.map(k => hmLabels[k]).join(' and ')} approaches. Draw on strategies from both profiles to get the best from your learning.`;
     }
-    return html;
+
+    if (state.hmSecondary && state.hmSecondary.length > 0) {
+        const secNames = state.hmSecondary.map(k => hmLabels[k]).join(' and ');
+        text += ` You also showed ${state.hmSecondary.length === 1 ? 'some' : 'notable'} ${secNames} tendencies, so those strategies may feel relevant to you too.`;
+    }
+    return text;
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
@@ -1760,12 +1882,37 @@ function downloadPDF() {
             });
         }
 
-        // ── H&M ──────────────────────────────────────────
+        // ── H&M — bar chart + explanation ────────────────
         sectionHeader('YOUR LEARNING APPROACH');
-        state.hmResult.forEach((k, i) => {
-            renderProfile(hmProfiles[k], true);
-            if (i < state.hmResult.length - 1) { hline(COL.tealLight, 0.5); y += 4; }
+        const hmOrder  = ['activist','reflector','theorist','pragmatist'];
+        const hmLbls   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+        const barColors = { activist:[224,123,57], reflector:[0,107,125], theorist:[0,79,94], pragmatist:[0,181,204] };
+        const maxBar    = CW * 0.72;
+
+        hmOrder.forEach(key => {
+            guard(13);
+            const score    = state.hmScores[key];
+            const isDom    = state.hmResult.includes(key);
+            const barW     = (score / 20) * maxBar;
+
+            doc.setFontSize(8.5); doc.setFont('helvetica', isDom ? 'bold' : 'normal');
+            tc(isDom ? COL.tealDark : COL.muted);
+            doc.text(hmLbls[key], M, y);
+            tc(COL.muted); doc.setFont('helvetica','normal');
+            doc.text(`${score}/20`, M + maxBar, y, { align:'right' });
+            y += 3;
+
+            fc(COL.tealLight); doc.roundedRect(M, y, maxBar, 4.5, 1, 1, 'F');
+            if (barW > 0) { fc(barColors[key]); doc.roundedRect(M, y, barW, 4.5, 1, 1, 'F'); }
+            y += 8;
         });
+        y += 3;
+
+        const hmExp = doc.splitTextToSize(buildHMExplanation(state.hmResult), CW);
+        guard(hmExp.length * 5);
+        doc.setFontSize(9.5); doc.setFont('helvetica','normal'); tc(COL.text);
+        doc.text(hmExp, M, y);
+        y += hmExp.length * 5 + 5;
 
         // ── FOOTER ───────────────────────────────────────
         guard(8);
@@ -1818,19 +1965,19 @@ function buildResultsSummaryText() {
         lines.push('');
     });
 
-    state.hmResult.forEach(k => {
-        const p = hmProfiles[k];
-        lines.push('─────────────────────────────────');
-        lines.push(p.title);
-        lines.push(p.intro);
-        lines.push('');
-        lines.push(p.studyHeading);
-        p.studyTips.forEach(t => lines.push(`  • ${t}`));
-        lines.push('');
-        lines.push(p.contextHeading);
-        p.contextTips.forEach(t => lines.push(`  • ${t}`));
-        lines.push('');
+    lines.push('─────────────────────────────────');
+    lines.push('LEARNING APPROACH SCORES:');
+    ['activist','reflector','theorist','pragmatist'].forEach(k => {
+        const lbl = hmLabels[k];
+        const sc  = state.hmScores[k];
+        const dom = state.hmResult.includes(k) ? ' *' : '';
+        lines.push(`  ${lbl}: ${sc}/20${dom}`);
     });
+    lines.push('  (* = dominant style)');
+    lines.push('');
+    lines.push('What this means for you:');
+    lines.push(buildHMExplanation(state.hmResult));
+    lines.push('');
 
     lines.push('─────────────────────────────────');
     lines.push('Dental Nurse Training Ltd | dentalnurse.training');
