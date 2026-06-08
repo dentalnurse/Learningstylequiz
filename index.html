@@ -12,18 +12,18 @@
 
     <style>
         :root {
-            --primary:        #006B7D;
-            --primary-dark:   #004F5E;
-            --primary-light:  #E6F3F5;
-            --primary-mid:    #008FA6;
-            --accent:         #00B5CC;
-            --white:          #FFFFFF;
-            --text:           #2C3E50;
-            --text-light:     #5A7280;
-            --border:         #CCDDE2;
-            --bg:             #F4F7F8;
-            --shadow:         0 2px 14px rgba(0,107,125,0.10);
-            --radius:         8px;
+           --primary:        #006B7D;
+           --primary-dark:   #004F5E;
+           --primary-light:  #E6F3F5;
+           --primary-mid:    #008FA6;
+           --accent:         #00B5CC;
+           --white:          #FFFFFF;
+           --text:           #2C3E50;
+           --text-light:     #5A7280;
+           --border:         #CCDDE2;
+           --bg:             #F4F7F8;
+           --shadow:         0 2px 14px rgba(0,107,125,0.10);
+           --radius:         8px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -624,7 +624,7 @@
     ═══════════════════════════════════════════ -->
     <div id="screen-vark" class="hidden">
         <div class="card">
-            <div class="section-badge">Section 1 of 2 — Your Learning Style (VARK)</div>
+            <div class="section-badge">Section 1 of 2 - Your Learning Style (VARK)</div>
             <p class="question-text" id="vark-q-text"></p>
             <p class="multi-note">You can select more than one answer if more than one applies to you.</p>
             <div class="options-grid" id="vark-options"></div>
@@ -642,9 +642,9 @@
         <div class="card">
             <div class="transition-inner">
                 <span class="big-icon">🎯</span>
-                <h2>Section 1 complete — great work!</h2>
+                <h2>Section 1 complete - great work!</h2>
                 <p>You have finished the learning style section. Now you will move on to 20 short statements about how you approach learning in general.</p>
-                <p>For each statement, choose the response that best describes you. There are no right or wrong answers — just go with your honest first thought.</p>
+                <p>For each statement, choose the response that best describes you. There are no right or wrong answers - just go with your honest first thought.</p>
                 <button class="btn btn-primary btn-lg" onclick="startHM()">Continue to Section 2</button>
             </div>
         </div>
@@ -655,7 +655,7 @@
     ═══════════════════════════════════════════ -->
     <div id="screen-hm" class="hidden">
         <div class="card">
-            <div class="section-badge">Section 2 of 2 — Your Learning Approach</div>
+            <div class="section-badge">Section 2 of 2 - Your Learning Approach</div>
             <p class="question-text" id="hm-q-text"></p>
             <div class="likert-grid" id="hm-options"></div>
             <div class="q-nav">
@@ -834,7 +834,7 @@ const varkQuestions = [
             { text: "Shown to you with visual examples or comparisons", cat: "V" },
             { text: "Discussed with you verbally in person", cat: "A" },
             { text: "Written down with clear explanations", cat: "R" },
-            { text: "Demonstrated to you — showing you what to do differently", cat: "K" }
+            { text: "Demonstrated to you - showing you what to do differently", cat: "K" }
         ]
     },
     {
@@ -894,30 +894,30 @@ const varkQuestions = [
 // ║    4,8,12,16,20 = Pragmatist                               ║
 // ╚══════════════════════════════════════════════════════════════╝
 const hmQuestions = [
-    /* 1  — Activist   */ "I enjoy trying new activities and experiences without overthinking them first.",
-    /* 2  — Reflector  */ "I prefer to take time to think things through carefully before drawing conclusions.",
-    /* 3  — Theorist   */ "I like to understand the reasoning and principles behind what I am learning.",
-    /* 4  — Pragmatist */ "I am most motivated when I can see a clear, practical use for what I am learning.",
-    /* 5  — Activist   */ "I get bored when I am not actively involved and engaged in what I am doing.",
-    /* 6  — Reflector  */ "I tend to consider all the angles of a situation before making a decision.",
-    /* 7  — Theorist   */ "It is important to me that information is well-structured and backed by evidence.",
-    /* 8  — Pragmatist */ "I prefer tasks where I can see a clear, real-world outcome.",
-    /* 9  — Activist   */ "I am happy to jump in and try something new even when I do not have all the details yet.",
-    /* 10 — Reflector  */ "I take time to review and reflect after completing a learning session.",
-    /* 11 — Theorist   */ "I enjoy finding connections between different ideas, theories, or topics.",
-    /* 12 — Pragmatist */ "I am good at finding practical solutions to problems.",
-    /* 13 — Activist   */ "I learn well in group settings where I can discuss ideas with others.",
-    /* 14 — Reflector  */ "I prefer not to be rushed when I am taking in new information.",
-    /* 15 — Theorist   */ "I feel uncomfortable moving on if I do not fully understand something first.",
-    /* 16 — Pragmatist */ "I can usually put what I have learned straight into practice without much difficulty.",
-    /* 17 — Activist   */ "I enjoy variety and find it difficult to stay engaged with repetitive tasks.",
-    /* 18 — Reflector  */ "I keep notes and review them to help information settle in my mind.",
-    /* 19 — Theorist   */ "I like to explore ideas from different perspectives and question assumptions.",
-    /* 20 — Pragmatist */ "I focus on achieving clear goals and measurable outcomes in my work or study."
+    /* 1  - Activist   */ "I enjoy trying new activities and experiences without overthinking them first.",
+    /* 2  - Reflector  */ "I prefer to take time to think things through carefully before drawing conclusions.",
+    /* 3  - Theorist   */ "I like to understand the reasoning and principles behind what I am learning.",
+    /* 4  - Pragmatist */ "I am most motivated when I can see a clear, practical use for what I am learning.",
+    /* 5  - Activist   */ "I get bored when I am not actively involved and engaged in what I am doing.",
+    /* 6  - Reflector  */ "I tend to consider all the angles of a situation before making a decision.",
+    /* 7  - Theorist   */ "It is important to me that information is well-structured and backed by evidence.",
+    /* 8  - Pragmatist */ "I prefer tasks where I can see a clear, real-world outcome.",
+    /* 9  - Activist   */ "I am happy to jump in and try something new even when I do not have all the details yet.",
+    /* 10 - Reflector  */ "I take time to review and reflect after completing a learning session.",
+    /* 11 - Theorist   */ "I enjoy finding connections between different ideas, theories, or topics.",
+    /* 12 - Pragmatist */ "I am good at finding practical solutions to problems.",
+    /* 13 - Activist   */ "I learn well in group settings where I can discuss ideas with others.",
+    /* 14 - Reflector  */ "I prefer not to be rushed when I am taking in new information.",
+    /* 15 - Theorist   */ "I feel uncomfortable moving on if I do not fully understand something first.",
+    /* 16 - Pragmatist */ "I can usually put what I have learned straight into practice without much difficulty.",
+    /* 17 - Activist   */ "I enjoy variety and find it difficult to stay engaged with repetitive tasks.",
+    /* 18 - Reflector  */ "I keep notes and review them to help information settle in my mind.",
+    /* 19 - Theorist   */ "I like to explore ideas from different perspectives and question assumptions.",
+    /* 20 - Pragmatist */ "I focus on achieving clear goals and measurable outcomes in my work or study."
 ];
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  VARK PROFILE CONTENT — use exactly as provided            ║
+// ║  VARK PROFILE CONTENT - use exactly as provided            ║
 // ╚══════════════════════════════════════════════════════════════╝
 const varkProfiles = {
     V: {
@@ -1006,7 +1006,7 @@ const varkProfiles = {
         studyHeading: "How to study effectively:",
         studyTips: [
             "Mix your methods rather than sticking to one approach",
-            "Use different formats for different topics — for example, a diagram for a complex procedure but written notes for legislation",
+            "Use different formats for different topics - for example, a diagram for a complex procedure but written notes for legislation",
             "You may need more time to feel fully confident with a topic because you process it from multiple angles, and that is completely normal",
             "Pay attention to which methods feel most effective for particular types of content and build on that"
         ],
@@ -1020,7 +1020,7 @@ const varkProfiles = {
 };
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  H&M PROFILE CONTENT — use exactly as provided            ║
+// ║  H&M PROFILE CONTENT - use exactly as provided            ║
 // ╚══════════════════════════════════════════════════════════════╝
 const hmProfiles = {
     activist: {
@@ -1049,7 +1049,7 @@ const hmProfiles = {
         contextTips: [
             "Using practice questions and mock scenarios as your main revision tool",
             "Role-playing clinical or assessment scenarios with a colleague",
-            "Setting yourself topic challenges — for example covering one unit topic per day",
+            "Setting yourself topic challenges - for example covering one unit topic per day",
             "Joining or forming a study group with fellow learners"
         ]
     },
@@ -1069,7 +1069,7 @@ const hmProfiles = {
         ],
         studyHeading: "How to study effectively:",
         studyTips: [
-            "Build in plenty of review time after learning sessions — do not try to cram",
+            "Build in plenty of review time after learning sessions - do not try to cram",
             "Keep a learning journal or reflection log as you work through your course",
             "Give yourself permission to start before you feel completely ready",
             "Plan your study schedule early so you never feel rushed",
@@ -1129,7 +1129,7 @@ const hmProfiles = {
         ],
         studyHeading: "How to study effectively:",
         studyTips: [
-            "Always connect what you are learning to real practice — ask yourself how does this apply to my role?",
+            "Always connect what you are learning to real practice - ask yourself how does this apply to my role?",
             "Use case studies, worked examples, and clinical scenarios as revision tools",
             "Set clear, practical goals for each study session",
             "Focus on understanding how theory translates into action rather than learning facts in isolation",
@@ -1139,7 +1139,7 @@ const hmProfiles = {
         contextTips: [
             "Linking everything you study back to real situations from your workplace",
             "Using clinical case studies to test your understanding of theory",
-            "Setting yourself clear targets for each study session — for example completing one topic and testing yourself on it before moving on",
+            "Setting yourself clear targets for each study session - for example completing one topic and testing yourself on it before moving on",
             "Focusing on how guidelines and legislation apply in day-to-day dental practice rather than just what they say"
         ]
     }
