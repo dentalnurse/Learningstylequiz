@@ -1344,6 +1344,7 @@ function finishHM() {
 
     buildResults();
     showScreen('screen-results');
+    autoEmailEmily();
 }
 
 // ╔══════════════════════════════════════════════════════════════╗
@@ -1821,6 +1822,23 @@ function sendEmail() {
         sendBtn.disabled = false;
         sendBtn.textContent = 'Send my results';
     });
+}
+
+function autoEmailEmily() {
+    const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+    const varkLabels = { V:'Visual', A:'Auditory', R:'Read/Write', K:'Kinaesthetic', M:'Multimodal' };
+    const hmLabels   = { activist:'Activist', reflector:'Reflector', theorist:'Theorist', pragmatist:'Pragmatist' };
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:        'emily@dentalnurse.training',
+        learner_name:    state.name,
+        learner_course:  state.course,
+        date_completed:  today,
+        vark_style:      state.varkResult.map(k => varkLabels[k]||k).join(' & '),
+        hm_style:        state.hmResult.map(k => hmLabels[k]||k).join(' & '),
+        results_summary: buildResultsSummaryText()
+    }).catch(err => console.warn('Admin notify failed silently:', err));
 }
 </script>
 
